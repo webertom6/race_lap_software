@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tandem Race - Scoreboard</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body class="screen">
+  <div class="page">
+    <header class="header">
+      <div>
+        <h1 class="title">Tandem Race - Live Scoreboard</h1>
+        <p class="subtitle">Public display screen</p>
+      </div>
+      <div>
+        <span id="phase-pill" class="phase-pill">phase: registry</span>
+        <p id="race-clock" class="status">Race clock: --</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Leaderboard</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Team</th>
+              <th>Laps</th>
+              <th>Current timer</th>
+              <th>Last lap</th>
+              <th>Best lap</th>
+            </tr>
+          </thead>
+          <tbody id="teams-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="charts-section" class="card" style="margin-top: 16px; display: none;">
+      <h2>Final charts</h2>
+      <div class="charts">
+        <div class="chart-box">
+          <canvas id="laps-over-time-chart"></canvas>
+        </div>
+        <div class="chart-box">
+          <canvas id="lap-duration-chart"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="/static/scoreboard.js"></script>
+</body>
+</html>

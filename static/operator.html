@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tandem Race - Operator</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div>
+        <h1 class="title">Tandem Race - Operator</h1>
+        <p class="subtitle">Registry, race actions, and finish controls</p>
+      </div>
+      <div>
+        <span id="phase-pill" class="phase-pill">phase: registry</span>
+      </div>
+    </header>
+
+    <div class="error-box" id="error-box"></div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Phase 1 - Registry</h2>
+        <form id="register-form" class="row">
+          <label>Team number
+            <input type="number" min="1" id="team-number" required>
+          </label>
+          <label>Team name
+            <input type="text" id="team-name" required>
+          </label>
+          <button type="submit">Add team</button>
+        </form>
+        <div class="row" style="margin-top: 8px;">
+          <button id="start-race-btn">Start race (3h)</button>
+          <button id="reset-all-btn" class="danger">Reset all</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Phase 2 and 3 - Controls</h2>
+        <div class="row">
+          <button id="finish-race-btn" class="secondary">Finish race</button>
+        </div>
+        <form id="manual-lap-form" class="row" style="margin-top: 10px;">
+          <label>Manual lap team
+            <select id="manual-team-id"></select>
+          </label>
+          <label>Lap duration (seconds)
+            <input type="number" min="1" step="0.1" id="manual-duration" required>
+          </label>
+          <button type="submit">Add manual lap</button>
+        </form>
+        <form id="magic-lap-form" class="row" style="margin-top: 10px;">
+          <label>Magic lap team
+            <select id="magic-team-id"></select>
+          </label>
+          <button type="submit" class="secondary">Add magic lap (mean)</button>
+        </form>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top: 16px;">
+      <h2>Leaderboard and team actions</h2>
+      <p class="status" id="race-clock">Race clock: --</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Team</th>
+              <th>Laps</th>
+              <th>Current timer</th>
+              <th>Last lap</th>
+              <th>Best lap</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="teams-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top: 16px;">
+      <h2>Recent audit log</h2>
+      <div id="audit-list" class="audit-list"></div>
+    </section>
+  </div>
+
+  <script src="/static/operator.js"></script>
+</body>
+</html>
