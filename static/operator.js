@@ -34,17 +34,25 @@ function updateTeamSelects(teams) {
 }
 
 function renderClock(state) {
-  const clockEl = document.getElementById("race-clock");
+  const clockEl = document.getElementById("race-clock-elapsed") || document.getElementById("race-clock");
   const clockRem = document.getElementById("race-clock-remaining");
+  if (!clockEl) {
+    return;
+  }
   if (!state.race_start_at) {
-    clockEl.textContent = "Race clock: waiting for start";
+    clockEl.textContent = "Waiting";
+    if (clockRem) {
+      clockRem.textContent = "";
+    }
     return;
   }
   const endAt = state.phase === "finished" ? state.race_end_at : state.now;
   const elapsed = Math.max(0, endAt - state.race_start_at);
   const remaining = Math.max(0, state.race_duration_seconds - elapsed);
   clockEl.textContent = `${formatSeconds(elapsed)}`;
-  clockRem.textContent = `${formatSeconds(remaining)}`;
+  if (clockRem) {
+    clockRem.textContent = `${formatSeconds(remaining)}`;
+  }
 }
 
 function renderAudit(audit) {
