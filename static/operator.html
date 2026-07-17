@@ -7,23 +7,26 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body class="operator-page">
-  <div class="page">
-    <header class="op-header">
-      <div class="op-header-inner">
+  <header class="op-header">
+    <div class="op-header-inner">
         <div class="op-brand">
           <div class="op-logo-square"></div>
           <div>
             <p class="op-brand-title">TANDEM · LAP TIMING</p>
-            <p class="op-brand-subtitle">Operator Console</p>
+            <p class="op-brand-subtitle">OPERATOR CONSOLE</p>
           </div>
         </div>
         <div class="op-nav">
           <button type="button" class="op-nav-active">Operator</button>
-          <a class="op-nav-link" href="/scoreboard">Open Scoreboard</a>
-        </div>
-      </div>
-    </header>
+          <a class="op-nav-link" href="/scoreboard">Open Scoreboard
+            <i class="ph ph-arrow-square-out text-sm ml-1"></i>
+          </a>
 
+        </div>
+    </div>
+  </header>
+
+  <div class="page">
     <div class="error-box" id="error-box"></div>
 
     <section class="op-status-grid">
@@ -34,11 +37,11 @@
       </div>
       <div class="op-status-card">
         <p class="op-status-label">Elapsed</p>
-        <p id="race-clock" class="op-status-time">00:00:00</p>
+        <p id="race-clock-elapsed" class="op-status-time">00:00:00</p>
       </div>
       <div class="op-status-card">
-        <p class="op-status-label">Data source</p>
-        <p class="op-status-phase">/api/state</p>
+        <p class="op-status-label">Remaining</p>
+        <p id="race-clock-remaining" class="op-status-time">03:00:00</p>
       </div>
     </section>
 
@@ -140,6 +143,7 @@
     </div>
   </div>
 
+  </div>
   <script src="/static/operator.js"></script>
 </body>
 </html>

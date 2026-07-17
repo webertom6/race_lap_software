@@ -35,6 +35,7 @@ function updateTeamSelects(teams) {
 
 function renderClock(state) {
   const clockEl = document.getElementById("race-clock");
+  const clockRem = document.getElementById("race-clock-remaining");
   if (!state.race_start_at) {
     clockEl.textContent = "Race clock: waiting for start";
     return;
@@ -42,7 +43,8 @@ function renderClock(state) {
   const endAt = state.phase === "finished" ? state.race_end_at : state.now;
   const elapsed = Math.max(0, endAt - state.race_start_at);
   const remaining = Math.max(0, state.race_duration_seconds - elapsed);
-  clockEl.textContent = `Race clock: elapsed ${formatSeconds(elapsed)} | remaining ${formatSeconds(remaining)}`;
+  clockEl.textContent = `${formatSeconds(elapsed)}`;
+  clockRem.textContent = `${formatSeconds(remaining)}`;
 }
 
 function renderAudit(audit) {

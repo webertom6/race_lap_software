@@ -211,16 +211,18 @@ td {
 
 .op-header {
   background: #fff;
-  border: 1px solid var(--grid);
+  border-bottom: 1px solid var(--grid);
 }
 
 .op-header-inner {
   min-height: 68px;
+  max-width: 1280px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 12px 16px;
+  padding: 12px 24px;
 }
 
 .op-brand {
@@ -230,9 +232,9 @@ td {
 }
 
 .op-logo-square {
-  width: 28px;
-  height: 28px;
-  background: var(--navy);
+  width: 32px;
+  height: 32px;
+  background: var(--blue);
 }
 
 .op-brand-title {
@@ -306,7 +308,7 @@ td {
 
 .op-status-phase {
   margin: 8px 0 0;
-  color: #203149;
+  color: var(--blue);
   font-family: "Barlow Condensed", sans-serif;
   font-size: 28px;
   font-weight: 700;
@@ -316,7 +318,7 @@ td {
 .op-status-time {
   margin: 8px 0 0;
   color: #061534;
-  font-family: "Barlow", system-ui, sans-serif;
+  font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 20px;
   font-weight: 700;
   line-height: 1.25;
@@ -362,7 +364,7 @@ td {
 
 .top-main {
   display: grid;
-  grid-template-columns: 1.1fr 1fr 1fr;
+  grid-template-columns: 1.1fr 1fr 1fr 1fr;
   gap: 16px;
   align-items: center;
   padding: 16px 22px;
