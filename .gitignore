@@ -1,2 +1,6 @@
 # ignore pycache dir
 __pycache__/
+
+# perso
+docs/
+template/

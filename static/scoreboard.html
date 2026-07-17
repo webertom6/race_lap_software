@@ -9,19 +9,30 @@
 </head>
 <body class="screen">
   <div class="page">
-    <header class="header">
-      <div>
-        <h1 class="title">Tandem Race - Live Scoreboard</h1>
-        <p class="subtitle">Public display screen</p>
+    <header class="top-shell">
+      <div class="top-main">
+        <div>
+          <p class="brand-small">Tandem Race</p>
+          <h1 class="brand-title">Live Timing</h1>
+          <p class="brand-meta">Lap 9 km · 180 min</p>
+        </div>
+        <div class="clock-wrap">
+          <p class="clock-label">Race clock</p>
+          <p id="race-clock" class="clock-value">00:00:00</p>
+        </div>
+        <div class="clock-wrap">
+          <p class="clock-label">Mode</p>
+          <span id="phase-pill" class="phase-pill">phase: registry</span>
+        </div>
       </div>
-      <div>
-        <span id="phase-pill" class="phase-pill">phase: registry</span>
-        <p id="race-clock" class="status">Race clock: --</p>
+      <div class="live-strip">
+        <p class="live-left">Live</p>
+        <p class="live-right">Leaderboard display</p>
       </div>
     </header>
 
-    <section class="card">
-      <h2>Leaderboard</h2>
+    <section class="card score-panel">
+      <h2 class="display score-heading">Leaderboard</h2>
       <div class="table-wrap">
         <table>
           <thead>
@@ -39,7 +50,7 @@
       </div>
     </section>
 
-    <section id="charts-section" class="card" style="margin-top: 16px; display: none;">
+    <section id="charts-section" class="card score-panel charts-panel" style="display: none;">
       <h2>Final charts</h2>
       <div class="charts">
         <div class="chart-box">

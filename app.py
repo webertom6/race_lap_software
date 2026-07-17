@@ -388,4 +388,4 @@ def api_reset_all():
 
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=8070, debug=True, reloader=True)
+    app.run(host="localhost", port=8060, debug=True, reloader=True)
