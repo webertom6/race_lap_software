@@ -104,6 +104,12 @@ button.secondary {
   color: var(--text);
 }
 
+button.important {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
 button.danger {
   background: var(--danger);
   border-color: var(--danger);
@@ -328,6 +334,17 @@ td {
   margin: 2px 0 0;
   color: #6a7689;
   font-size: 13px;
+}
+
+.op-reset {
+  margin-top: 12px;
+  background: var(--danger);
+}
+
+.op-reset button {
+  height: 100%;
+  width: 100%;
+  font-size: 32px;
 }
 
 .op-layout {

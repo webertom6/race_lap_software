@@ -45,6 +45,10 @@
       </div>
     </section>
 
+    <section class="card op-reset">
+        <button id="reset-all-btn" class="danger">Reset all</button>
+    </section>
+
     <div class="op-layout">
       <div class="op-stack">
         <section class="card op-card">
@@ -66,22 +70,25 @@
 
         <section class="card op-card">
           <h2>Add team</h2>
-          <form id="register-form" class="row">
-            <div class="field">
-              <label>Team number
-                <input type="number" min="1" id="team-number" required>
-              </label>
+          <form id="register-form">
+            <div class="row">
+              <div class="field">
+                <label>Team number
+                  <input type="number" min="1" id="team-number" required>
+                </label>
+              </div>
+              <div class="field">
+                <label>Team name
+                  <input type="text" id="team-name" required>
+                </label>
+              </div>
             </div>
-            <div class="field">
-              <label>Team name
-                <input type="text" id="team-name" required>
-              </label>
+            <div class="row" style="margin-top: 12px;">
+              <button type="submit" style="width: 100%;">+ Register team</button>
             </div>
-            <button type="submit">+ Register team</button>
           </form>
           <div class="row" style="margin-top: 12px;">
-            <button id="start-race-btn">End registration - start race</button>
-            <button id="reset-all-btn" class="danger">Reset all</button>
+            <button id="start-race-btn" class="important" style="width: 100%;">End registration - start race</button>
           </div>
         </section>
       </div>
@@ -90,7 +97,7 @@
         <section class="card op-card">
           <h2>Phase 2 and 3 controls</h2>
           <div class="row">
-            <button id="finish-race-btn" class="secondary">Finish race</button>
+            <button id="finish-race-btn" class="important">Finish race</button>
           </div>
           <form id="manual-lap-form" class="row" style="margin-top: 12px;">
             <div class="field">
