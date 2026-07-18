@@ -1,5 +1,6 @@
 let chartLaps = null;
 let chartDurations = null;
+let chartsRendered = false;
 
 const COLORS = [
   "#1d4ed8",
@@ -123,6 +124,10 @@ function renderChartsIfFinished(state) {
   const section = document.getElementById("charts-section");
   if (state.phase !== "finished") {
     section.style.display = "none";
+    chartsRendered = false;
+    return;
+  }
+  if (chartsRendered) {
     return;
   }
 
@@ -134,6 +139,7 @@ function renderChartsIfFinished(state) {
 
   chartDurations.data.datasets = toDatasets(state.charts.lap_durations || []);
   chartDurations.update();
+  chartsRendered = true;
 }
 
 async function refreshState() {
