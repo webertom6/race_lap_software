@@ -81,6 +81,13 @@ function renderTable(state) {
   tbody.innerHTML = state.leaderboard
     .map((row) => {
       const disableRace = state.phase !== "race" ? "disabled" : "";
+      const raceBtn = state.phase === "race" 
+        ? `<button ${disableRace} data-action="inc" data-team-id="${row.id}">+1</button> 
+            <button class="secondary" data-action="revert" data-team-id="${row.id}">Revert</button>` 
+        : "";
+      const removeBtn = state.phase === "registry"
+        ? `<button class="danger" data-action="remove" data-team-id="${row.id}">Remove</button>`
+        : "";
       return `
         <tr>
           <td class="rank">${row.rank}</td>
@@ -90,8 +97,8 @@ function renderTable(state) {
           <td>${formatSeconds(row.last_lap_seconds)}</td>
           <td>${formatSeconds(row.best_lap_seconds)}</td>
           <td>
-            <button ${disableRace} data-action="inc" data-team-id="${row.id}">+1</button>
-            <button class="secondary" data-action="revert" data-team-id="${row.id}">Revert</button>
+            ${raceBtn}
+            ${removeBtn}
           </td>
         </tr>
       `;
@@ -212,6 +219,14 @@ document.getElementById("teams-body").addEventListener("click", async (event) =>
 
   if (action === "revert") {
     const res = await postJSON("/api/revert-last-lap", { team_id: teamId });
+    if (!res.ok) {
+      setError(res.error);
+      return;
+    }
+  }
+
+  if (action === "remove") {
+    const res = await postJSON("/api/remove-team", { team_id: teamId });
     if (!res.ok) {
       setError(res.error);
       return;
