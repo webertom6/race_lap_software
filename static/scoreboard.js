@@ -2,16 +2,10 @@ let chartLaps = null;
 let chartDurations = null;
 let chartsRendered = false;
 
-const COLORS = [
-  "#1d4ed8",
-  "#2563eb",
-  "#3b82f6",
-  "#60a5fa",
-  "#0ea5e9",
-  "#0284c7",
-  "#0369a1",
-  "#0891b2",
-];
+function teamColor(index, total) {
+  const hue = total <= 1 ? 270 : Math.round(270 - (270 * index / (total - 1)));
+  return `hsl(${hue}, 80%, 45%)`;
+}
 
 function formatSeconds(total) {
   if (total === null || total === undefined) {
@@ -73,12 +67,14 @@ function renderLeaderboard(state) {
 }
 
 function toDatasets(series) {
+  const total = series.length;
   return series.map((item, index) => {
+    const color = teamColor(index, total);
     return {
       label: item.label,
       data: item.points,
-      borderColor: COLORS[index % COLORS.length],
-      backgroundColor: COLORS[index % COLORS.length],
+      borderColor: color,
+      backgroundColor: color,
       pointRadius: 2,
       borderWidth: 2,
       tension: 0.15,
@@ -134,10 +130,18 @@ function renderChartsIfFinished(state) {
   section.style.display = "block";
   ensureCharts();
 
-  chartLaps.data.datasets = toDatasets(state.charts.laps_over_time || []);
+  const rankMap = {};
+  for (const row of state.leaderboard) {
+    rankMap[row.id] = row.rank;
+  }
+  const byRank = (a, b) => (rankMap[a.team_id] ?? 999) - (rankMap[b.team_id] ?? 999);
+  const lapsSeries = [...(state.charts.laps_over_time || [])].sort(byRank);
+  const durationsSeries = [...(state.charts.lap_durations || [])].sort(byRank);
+
+  chartLaps.data.datasets = toDatasets(lapsSeries);
   chartLaps.update();
 
-  chartDurations.data.datasets = toDatasets(state.charts.lap_durations || []);
+  chartDurations.data.datasets = toDatasets(durationsSeries);
   chartDurations.update();
   chartsRendered = true;
 }
