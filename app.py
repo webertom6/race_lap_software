@@ -231,6 +231,27 @@ def api_register_team():
         return ok({"state": state_snapshot()})
 
 
+@app.post("/api/remove-team")
+def api_remove_team():
+    response.content_type = "application/json"
+    data = request.json or {}
+    team_id = data.get("team_id")
+
+    with state_lock:
+        if STATE["phase"] != "registry":
+            return err("teams can only be removed during registry phase")
+        if team_id is None:
+            return err("team_id is required")
+
+        team = find_team(int(team_id))
+        if not team:
+            return err("team not found")
+
+        STATE["teams"] = [t for t in STATE["teams"] if t["id"] != int(team_id)]
+        push_audit("remove-team", f"removed team #{team['number']} {team['name']}")
+        return ok({"state": state_snapshot()})
+
+
 @app.post("/api/start-race")
 def api_start_race():
     response.content_type = "application/json"
