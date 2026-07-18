@@ -52,8 +52,11 @@ function renderLeaderboard(state) {
     tbody.innerHTML = '<tr><td colspan="6" class="muted">No team registered</td></tr>';
     return;
   }
+  const validBests = state.leaderboard.map(r => r.best_lap_seconds).filter(v => v !== null && v !== undefined);
+  const topBest = validBests.length ? Math.min(...validBests) : null;
   tbody.innerHTML = state.leaderboard
     .map((row) => {
+      const bestClass = row.best_lap_seconds == null ? "time" : row.best_lap_seconds === topBest ? "time best-lap-top" : "time best-lap";
       return `
         <tr>
           <td class="rank">${row.rank}</td>
@@ -61,7 +64,7 @@ function renderLeaderboard(state) {
           <td>${row.laps_count}</td>
           <td class="time">${formatSeconds(row.running_lap_seconds)}</td>
           <td class="time">${formatSeconds(row.last_lap_seconds)}</td>
-          <td class="time">${formatSeconds(row.best_lap_seconds)}</td>
+          <td class="${bestClass}">${formatSeconds(row.best_lap_seconds)}</td>
         </tr>
       `;
     })

@@ -505,6 +505,14 @@ td.time {
   font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+.best-lap {
+  color: var(--green);
+}
+
+.best-lap-top {
+  color: var(--purple);
+}
+
 .screen .clock-value {
   font-size: 84px;
 }
