@@ -176,6 +176,11 @@ td {
   font-weight: 700;
 }
 
+.time {
+  font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 16px;
+}
+
 .muted {
   color: var(--muted);
 }
@@ -494,6 +499,10 @@ td {
   font-size: 32px;
   padding: 10px 20px;
   font-family: "Barlow Condensed", sans-serif;
+}
+
+td.time {
+  font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .screen .clock-value {

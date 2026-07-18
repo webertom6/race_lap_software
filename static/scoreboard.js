@@ -59,9 +59,9 @@ function renderLeaderboard(state) {
           <td class="rank">${row.rank}</td>
           <td>${row.name}</td>
           <td>${row.laps_count}</td>
-          <td>${formatSeconds(row.running_lap_seconds)}</td>
-          <td>${formatSeconds(row.last_lap_seconds)}</td>
-          <td>${formatSeconds(row.best_lap_seconds)}</td>
+          <td class="time">${formatSeconds(row.running_lap_seconds)}</td>
+          <td class="time">${formatSeconds(row.last_lap_seconds)}</td>
+          <td class="time">${formatSeconds(row.best_lap_seconds)}</td>
         </tr>
       `;
     })
