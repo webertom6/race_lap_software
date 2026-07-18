@@ -146,9 +146,17 @@ function renderChartsIfFinished(state) {
   chartsRendered = true;
 }
 
+function renderConfig(state) {
+  const el = document.getElementById("brand-meta");
+  if (!el) return;
+  const durationMin = Math.round(state.race_duration_seconds / 60);
+  el.textContent = `Lap ${state.lap_distance_km} km · ${durationMin} min`;
+}
+
 async function refreshState() {
   const res = await fetch("/api/state");
   const state = await res.json();
+  renderConfig(state);
   renderClock(state);
   renderLeaderboard(state);
   renderChartsIfFinished(state);

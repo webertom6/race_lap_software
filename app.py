@@ -12,6 +12,7 @@ def new_state():
     return {
         "phase": "registry",  # registry | race | finished
         "race_duration_seconds": 3 * 60 * 60,
+        "lap_distance_km": 9,
         "race_start_at": None,
         "race_end_at": None,
         "teams": [],
@@ -160,6 +161,7 @@ def state_snapshot():
     return {
         "phase": STATE["phase"],
         "race_duration_seconds": STATE["race_duration_seconds"],
+        "lap_distance_km": STATE["lap_distance_km"],
         "race_start_at": STATE["race_start_at"],
         "race_end_at": STATE["race_end_at"],
         "now": now_value,
@@ -190,6 +192,39 @@ def api_state():
     response.content_type = "application/json"
     with state_lock:
         return state_snapshot()
+
+
+@app.post("/api/set-config")
+def api_set_config():
+    response.content_type = "application/json"
+    data = request.json or {}
+    distance_raw = data.get("lap_distance_km")
+    duration_raw = data.get("race_duration_minutes")
+
+    with state_lock:
+        if STATE["phase"] != "registry":
+            return err("configuration can only be changed during registry phase")
+
+        if distance_raw is not None:
+            try:
+                distance = float(distance_raw)
+            except (TypeError, ValueError):
+                return err("lap_distance_km must be numeric")
+            if distance <= 0:
+                return err("lap_distance_km must be > 0")
+            STATE["lap_distance_km"] = distance
+
+        if duration_raw is not None:
+            try:
+                duration_min = float(duration_raw)
+            except (TypeError, ValueError):
+                return err("race_duration_minutes must be numeric")
+            if duration_min <= 0:
+                return err("race_duration_minutes must be > 0")
+            STATE["race_duration_seconds"] = duration_min * 60
+
+        push_audit("set-config", f"config: {STATE['lap_distance_km']} km, {STATE['race_duration_seconds'] / 60:.0f} min")
+        return ok({"state": state_snapshot()})
 
 
 @app.post("/api/register-team")
@@ -409,4 +444,4 @@ def api_reset_all():
 
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=8060, debug=True, reloader=True)
+    app.run(host="localhost", port=8095, debug=True, reloader=True)

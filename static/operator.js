@@ -108,11 +108,17 @@ function renderTable(state) {
 
 function updatePhaseControls(state) {
   document.getElementById("phase-pill").textContent = `phase: ${state.phase}`;
+  document.getElementById("save-config-btn").disabled = state.phase !== "registry";
   document.getElementById("start-race-btn").disabled = state.phase !== "registry";
   document.getElementById("register-form").querySelector("button").disabled = state.phase !== "registry";
   document.getElementById("finish-race-btn").disabled = state.phase !== "race";
   document.getElementById("manual-lap-form").querySelector("button").disabled = state.phase !== "race";
   document.getElementById("magic-lap-form").querySelector("button").disabled = state.phase !== "race";
+
+  const distEl = document.getElementById("lap-distance");
+  const durEl = document.getElementById("race-duration");
+  if (document.activeElement !== distEl) distEl.value = state.lap_distance_km;
+  if (document.activeElement !== durEl) durEl.value = Math.round(state.race_duration_seconds / 60);
 }
 
 async function refreshState() {
@@ -129,6 +135,18 @@ async function refreshState() {
     setError(String(error));
   }
 }
+
+document.getElementById("config-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const lapDistanceKm = Number(document.getElementById("lap-distance").value);
+  const raceDurationMinutes = Number(document.getElementById("race-duration").value);
+  const res = await postJSON("/api/set-config", { lap_distance_km: lapDistanceKm, race_duration_minutes: raceDurationMinutes });
+  if (!res.ok) {
+    setError(res.error);
+    return;
+  }
+  refreshState();
+});
 
 document.getElementById("register-form").addEventListener("submit", async (event) => {
   event.preventDefault();
