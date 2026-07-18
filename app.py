@@ -444,4 +444,7 @@ def api_reset_all():
 
 
 if __name__ == "__main__":
-    app.run(host="localhost", port=8095, debug=True, reloader=True)
+    from waitress import serve
+    print("Server started at http://localhost:8094")
+    print("Press Ctrl+C to stop the server.")
+    serve(app, host="0.0.0.0", port=8094, threads=8)

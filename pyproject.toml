@@ -7,4 +7,5 @@ requires-python = ">=3.14"
 dependencies = [
     "bottle>=0.13.4",
     "pyautogui>=0.9.54",
+    "waitress>=3.0.2",
 ]
