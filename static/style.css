@@ -171,6 +171,10 @@ td {
   font-size: 16px;
 }
 
+.operator-page tbody tr:hover td {
+  background: var(--line);
+}
+
 .rank {
   color: var(--blue);
   font-weight: 700;
