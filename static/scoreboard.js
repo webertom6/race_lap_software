@@ -41,10 +41,15 @@ function renderClock(state) {
 }
 
 function renderLeaderboard(state) {
+  const isFinished = state.phase === "finished";
+  document.getElementById("th-current-timer").style.display = isFinished ? "none" : "";
+  document.getElementById("th-last-lap").style.display = isFinished ? "none" : "";
+  document.getElementById("results-layout").classList.toggle("results-finished", isFinished);
   document.getElementById("phase-pill").textContent = `phase: ${state.phase}`;
   const tbody = document.getElementById("teams-body");
   if (!state.leaderboard.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="muted">No team registered</td></tr>';
+    const colspan = isFinished ? 4 : 6;
+    tbody.innerHTML = `<tr><td colspan="${colspan}" class="muted">No team registered</td></tr>`;
     return;
   }
   const validBests = state.leaderboard.map(r => r.best_lap_seconds).filter(v => v !== null && v !== undefined);
@@ -52,13 +57,15 @@ function renderLeaderboard(state) {
   tbody.innerHTML = state.leaderboard
     .map((row) => {
       const bestClass = row.best_lap_seconds == null ? "time" : row.best_lap_seconds === topBest ? "time best-lap-top" : "time best-lap";
+      const raceCols = isFinished ? "" : `
+          <td class="time">${formatSeconds(row.running_lap_seconds)}</td>
+          <td class="time">${formatSeconds(row.last_lap_seconds)}</td>`;
       return `
         <tr>
           <td class="rank">${row.rank}</td>
           <td>${row.name}</td>
           <td>${row.laps_count}</td>
-          <td class="time">${formatSeconds(row.running_lap_seconds)}</td>
-          <td class="time">${formatSeconds(row.last_lap_seconds)}</td>
+          ${raceCols}
           <td class="${bestClass}">${formatSeconds(row.best_lap_seconds)}</td>
         </tr>
       `;

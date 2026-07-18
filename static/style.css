@@ -485,6 +485,17 @@ td {
   margin-top: 16px;
 }
 
+.results-finished {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.results-finished .charts-panel {
+  margin-top: 0;
+}
+
 .screen .table-wrap {
   border-left: none;
   border-right: none;
