@@ -1,11 +1,23 @@
+import logging
 import time
 from threading import Lock
 
 from bottle import Bottle, HTTPResponse, request, response, static_file
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(message)s",
+    datefmt="%H:%M:%S",
+)
+log = logging.getLogger("app")
 
 app = Bottle()
 state_lock = Lock()
+
+
+@app.hook("after_request")
+def log_request():
+    log.info("%s %s", request.method, request.path)
 
 
 def new_state():
@@ -443,8 +455,12 @@ def api_reset_all():
         return ok({"state": state_snapshot()})
 
 
-if __name__ == "__main__":
+def main():
     from waitress import serve
-    print("Server started at http://localhost:8094")
-    print("Press Ctrl+C to stop the server.")
+    log.info("Server starting at http://0.0.0.0:8094")
     serve(app, host="0.0.0.0", port=8094, threads=8)
+
+
+if __name__ == "__main__":
+    import hupper
+    hupper.start_reloader("app.main")

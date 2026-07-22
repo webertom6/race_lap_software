@@ -9,3 +9,8 @@ dependencies = [
     "pyautogui>=0.9.54",
     "waitress>=3.0.2",
 ]
+
+[dependency-groups]
+dev = [
+    "hupper>=1.12.1",
+]
