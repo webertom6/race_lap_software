@@ -1,6 +1,7 @@
 let chartLaps = null;
 let chartDurations = null;
 let chartsRendered = false;
+let lastState = null;
 
 function teamColor(index, total) {
   const hue = total <= 1 ? 270 : Math.round(270 - (270 * index / (total - 1)));
@@ -21,23 +22,17 @@ function formatSeconds(total) {
 function renderClock(state) {
   const clockEl = document.getElementById("race-clock-elapsed") || document.getElementById("race-clock");
   const clockRem = document.getElementById("race-clock-remaining");
-  if (!clockEl) {
-    return;
-  }
+  if (!clockEl) return;
   if (!state.race_start_at) {
     clockEl.textContent = "Waiting";
-    if (clockRem) {
-      clockRem.textContent = "";
-    }
+    if (clockRem) clockRem.textContent = "";
     return;
   }
   const endAt = state.phase === "finished" ? state.race_end_at : state.now;
   const elapsed = Math.max(0, endAt - state.race_start_at);
   const remaining = Math.max(0, state.race_duration_seconds - elapsed);
-  clockEl.textContent = `${formatSeconds(elapsed)}`;
-  if (clockRem) {
-    clockRem.textContent = `${formatSeconds(remaining)}`;
-  }
+  clockEl.textContent = formatSeconds(elapsed);
+  if (clockRem) clockRem.textContent = formatSeconds(remaining);
 }
 
 function renderLeaderboard(state) {
@@ -57,13 +52,25 @@ function renderLeaderboard(state) {
           <td class="rank">${row.rank}</td>
           <td>${row.name}</td>
           <td>${row.laps_count}</td>
-          <td class="time">${formatSeconds(row.running_lap_seconds)}</td>
+          <td class="time" id="timer-${row.id}">${formatSeconds(row.running_lap_seconds)}</td>
           <td class="time">${formatSeconds(row.last_lap_seconds)}</td>
           <td class="${bestClass}">${formatSeconds(row.best_lap_seconds)}</td>
         </tr>
       `;
     })
     .join("");
+}
+
+function updateRunningTimers() {
+  if (!lastState || lastState.phase !== "race") return;
+  const now = Date.now() / 1000;
+  for (const row of lastState.leaderboard) {
+    const el = document.getElementById(`timer-${row.id}`);
+    if (!el) continue;
+    const startAt = row.last_crossing_at ?? lastState.race_start_at;
+    if (startAt == null) continue;
+    el.textContent = formatSeconds(now - startAt);
+  }
 }
 
 function toDatasets(series) {
@@ -123,24 +130,19 @@ function renderChartsIfFinished(state) {
     chartsRendered = false;
     return;
   }
-  if (chartsRendered) {
-    return;
-  }
+  if (chartsRendered) return;
 
   section.style.display = "block";
   ensureCharts();
 
   const rankMap = {};
-  for (const row of state.leaderboard) {
-    rankMap[row.id] = row.rank;
-  }
+  for (const row of state.leaderboard) rankMap[row.id] = row.rank;
   const byRank = (a, b) => (rankMap[a.team_id] ?? 999) - (rankMap[b.team_id] ?? 999);
   const lapsSeries = [...(state.charts.laps_over_time || [])].sort(byRank);
   const durationsSeries = [...(state.charts.lap_durations || [])].sort(byRank);
 
   chartLaps.data.datasets = toDatasets(lapsSeries);
   chartLaps.update();
-
   chartDurations.data.datasets = toDatasets(durationsSeries);
   chartDurations.update();
   chartsRendered = true;
@@ -153,14 +155,26 @@ function renderConfig(state) {
   el.textContent = `Lap ${state.lap_distance_km} km · ${durationMin} min`;
 }
 
-async function refreshState() {
-  const res = await fetch("/api/state");
-  const state = await res.json();
-  renderConfig(state);
-  renderClock(state);
-  renderLeaderboard(state);
-  renderChartsIfFinished(state);
+function renderAll(snapshot) {
+  lastState = snapshot;
+  renderConfig(snapshot);
+  renderClock(snapshot);
+  renderLeaderboard(snapshot);
+  renderChartsIfFinished(snapshot);
 }
 
-refreshState();
-window.setInterval(refreshState, 1000);
+// init from localStorage (scoreboard opened after race already started)
+try {
+  const saved = localStorage.getItem("tandem_race_raw");
+  if (saved) renderAll(stateSnapshot(JSON.parse(saved)));
+} catch (_) {}
+
+// live updates from operator tab via BroadcastChannel
+CHANNEL.onmessage = e => renderAll(e.data);
+
+// clock and running timers tick locally every second
+setInterval(() => {
+  if (!lastState) return;
+  renderClock({ ...lastState, now: Date.now() / 1000 });
+  updateRunningTimers();
+}, 1000);

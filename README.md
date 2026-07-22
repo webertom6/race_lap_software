@@ -29,3 +29,19 @@ python app.py
 
 - state is in-memory only in v1 (restart resets race data)
 - backend is python (bottle), frontend is html/css with lightweight js polling
+
+---
+# simplist local
+
+Replace the Python/Bottle backend with a state.js file holding all business logic, state, and BroadcastChannel broadcasting. The operator mutates state directly; the scoreboard listens. A minimal server.py (~15 lines, stdlib only) replaces app.py just to serve static files. All render functions stay unchanged — only how state is produced and distributed changes.
+
+- static/state.js	new — all business logic, state schema, mutations, BroadcastChannel, localStorage
+- static/operator.js	rewritten — no fetch, calls apply*() directly, synchronous handlers
+- static/scoreboard.js	rewritten — no polling, BroadcastChannel listener + localStorage init, local clock tick
+- static/operator.html	added <script src="/static/state.js">
+- static/scoreboard.html	added <script src="/static/state.js">
+- server.py	new — 20 lines, stdlib only, python server.py to start
+- app.py	still present but unused — delete when ready
+
+
+Start with python server.py (no uv, no dependencies). Open http://localhost:8094 for operator, http://localhost:8094/scoreboard in a second window for scoreboard.
