@@ -367,6 +367,7 @@ td {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0; /* allow grid item to shrink below content size */
 }
 
 .op-card {
