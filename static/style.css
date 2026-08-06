@@ -116,6 +116,15 @@ button.danger {
   color: #fff;
 }
 
+button:not(:disabled):hover {
+  filter: brightness(0.88);
+}
+
+button:not(:disabled):active {
+  filter: brightness(0.75);
+  transform: scale(0.97);
+}
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -166,7 +175,8 @@ th {
 
 td {
   border-bottom: 1px solid var(--line);
-  padding: 10px 14px;
+  /* pad : (between lines) (betweeen columns) */
+  padding: 10px 10px;
   color: var(--text);
   font-size: 16px;
 }
@@ -374,6 +384,41 @@ td {
   padding: 12px;
 }
 
+/* desktop action column - option B: +1 full-width, revert small below */
+.action-th, .action-cell { white-space: nowrap; }
+
+.action-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  vertical-align: middle;
+  padding: 8px 10px;
+}
+
+.action-inc { width: 100%; }
+
+.action-revert {
+  font-size: 10px;
+  padding: 5px 8px;
+}
+
+/* mobile action row - option C: full-width row below, buttons side by side */
+.action-row-mobile { display: none; }
+
+@media (max-width: 768px) {
+  .action-th, .action-cell { display: none; }
+  .action-row-mobile { display: table-row; }
+  .action-row-mobile td {
+    padding: 4px 10px 10px;
+    border-bottom: 2px solid var(--grid);
+  }
+  .action-btns-mobile {
+    display: flex;
+    gap: 8px;
+  }
+  .action-btns-mobile button { flex: 1; }
+}
+
 /* scoreboard page - close to ending template shell */
 .screen {
   background: #fff;
@@ -520,6 +565,11 @@ td.time {
 
 .screen .clock-value {
   font-size: 64px;
+}
+@media (max-width: 600px) {
+  .screen .clock-value {
+    font-size: 40px;
+  }
 }
 
 .screen .clock-label {
