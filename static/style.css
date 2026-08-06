@@ -532,6 +532,17 @@ td.time {
   font-size: 24px;
 }
 
+@media (max-width: 480px) {
+  .op-header-inner {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+  }
+
+  .op-nav {
+    width: 100%;
+  }
+}
+
 @media (max-width: 1120px) {
   .op-status-grid {
     grid-template-columns: 1fr;
