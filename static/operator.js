@@ -80,14 +80,14 @@ function renderTable(state) {
 
   tbody.innerHTML = state.leaderboard
     .map((row) => {
-      const disableRace = state.phase !== "race" ? "disabled" : "";
-      const raceBtn = state.phase === "race" 
-        ? `<button ${disableRace} data-action="inc" data-team-id="${row.id}">+1</button> 
-            <button class="secondary" data-action="revert" data-team-id="${row.id}">Revert</button>` 
-        : "";
+      const incBtn = state.phase === "race"
+        ? `<button class="action-inc" data-action="inc" data-team-id="${row.id}">+1</button>` : "";
+      const revertBtn = state.phase === "race"
+        ? `<button class="secondary action-revert" data-action="revert" data-team-id="${row.id}">Revert</button>` : "";
       const removeBtn = state.phase === "registry"
-        ? `<button class="danger" data-action="remove" data-team-id="${row.id}">Remove</button>`
-        : "";
+        ? `<button class="danger" data-action="remove" data-team-id="${row.id}">Remove</button>` : "";
+      const mobileBtns = `<div class="action-btns-mobile">${incBtn}${revertBtn}${removeBtn}</div>`;
+      const hasActions = incBtn || revertBtn || removeBtn;
       return `
         <tr>
           <td class="rank">${row.rank}</td>
@@ -96,10 +96,10 @@ function renderTable(state) {
           <td>${formatSeconds(row.running_lap_seconds)}</td>
           <td>${formatSeconds(row.last_lap_seconds)}</td>
           <td>${formatSeconds(row.best_lap_seconds)}</td>
-          <td>
-            ${raceBtn}
-            ${removeBtn}
-          </td>
+          <td ${hasActions ? 'class="action-cell"' : ""}>${incBtn}${revertBtn}${removeBtn}</td>
+        </tr>
+        <tr class="action-row-mobile">
+          <td colspan="7">${mobileBtns}</td>
         </tr>
       `;
     })
