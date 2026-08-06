@@ -2,17 +2,19 @@
 
 ## Build, test, and lint commands
 
-This project uses a Python Bottle backend with static HTML/CSS/JS pages and no package manager scripts
+Python Bottle backend served by Waitress, with Hupper for dev auto-reload. Dependencies managed with `uv`
 
-- Install dependency: `pip install -r requirements.txt`
-- Run app: `python app.py`
-- Server URL: `http://localhost:8070`
+- Install dependencies: `uv sync`
+- Run app (dev, auto-reload via hupper): `python app.py`
+- Server URL: `http://localhost:8094`
+- The startup log prints LAN IP addresses and QR codes for quick device access
 
 No formal lint or test runner is configured
 
 - Single-file backend syntax check: `python -m py_compile app.py`
-- Single endpoint smoke check: `curl http://localhost:8070/api/state`
-- Single operator action check: `curl -X POST http://localhost:8070/api/register-team -H "Content-Type: application/json" -d "{\"number\":1,\"name\":\"Team A\"}"`
+- Single endpoint smoke check: `curl http://localhost:8094/api/state`
+- Single operator action check: `curl -X POST http://localhost:8094/api/register-team -H "Content-Type: application/json" -d "{\"number\":1,\"name\":\"Team A\"}"`
+- Config change check (registry phase only): `curl -X POST http://localhost:8094/api/set-config -H "Content-Type: application/json" -d "{\"lap_distance_km\":9,\"race_duration_minutes\":180}"`
 
 ## High-level architecture
 
@@ -20,7 +22,12 @@ No formal lint or test runner is configured
   - owns global in-memory race state (`STATE`) protected by `Lock`
   - enforces phase transitions: `registry -> race -> finished`
   - computes all derived views (`team_snapshot`, `build_leaderboard`, `build_charts_data`) before returning `/api/state`
-  - exposes operator mutation APIs (`/api/register-team`, `/api/start-race`, `/api/increment-lap`, `/api/revert-last-lap`, `/api/manual-lap`, `/api/magic-lap`, `/api/finish-race`, `/api/reset-all`)
+  - exposes operator mutation APIs:
+    - registry: `/api/register-team`, `/api/remove-team`, `/api/set-config`
+    - race: `/api/start-race`, `/api/increment-lap`, `/api/revert-last-lap`, `/api/manual-lap`, `/api/magic-lap`, `/api/finish-race`
+    - reset: `/api/reset-all`
+  - served by Waitress in production; Hupper wraps `main()` for dev hot-reload
+  - prints LAN IPs and ASCII QR codes at startup for quick access from other devices
 - UI is split into two static pages under `static/`
   - `operator.html` + `operator.js`: control plane for registration and race actions
   - `scoreboard.html` + `scoreboard.js`: display plane for public leaderboard and final charts
@@ -52,4 +59,8 @@ No formal lint or test runner is configured
   - UIs refresh with 1s polling
 - App state is intentionally in-memory for v1
   - restart resets race data
-- Keep display styling aligned with existing white/blue design tokens in `static/style.css`
+- `/api/set-config` is only valid during `registry` phase; changes `lap_distance_km` and `race_duration_seconds`
+- `magic-lap` falls back from team mean to global mean; errors if no lap data exists at all
+- `remove-team` is only valid during `registry` phase
+- JS clock rendering: operator uses `race-clock-elapsed` / `race-clock-remaining` element IDs; scoreboard uses the same IDs. Both JS files guard against null elements before setting `textContent`
+- Keep display styling aligned with design tokens in `static/style.css` (navy `#061534`, blue `#005eff`, red `#e11d22`, Barlow Condensed + Barlow + Roboto Mono font stack)

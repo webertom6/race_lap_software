@@ -1,4 +1,5 @@
 import logging
+import socket
 import time
 from threading import Lock
 
@@ -455,10 +456,44 @@ def api_reset_all():
         return ok({"state": state_snapshot()})
 
 
+def get_local_ips():
+    ips = set()
+    try:  # primary: follows the active default route
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            ips.add(s.getsockname()[0])
+    except OSError:
+        pass
+    try:  # fallback: enumerate all hostname addresses
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            ip = info[4][0]
+            if not ip.startswith("127.") and not ip.startswith("169.254."):
+                ips.add(ip)
+    except OSError:
+        pass
+    return sorted(ips)
+
+
+def print_qr(url):
+    import qrcode
+    qr = qrcode.QRCode(border=1)
+    qr.add_data(url)
+    qr.make(fit=True)
+    qr.print_ascii(invert=True)
+
+
 def main():
     from waitress import serve
-    log.info("Server starting at http://0.0.0.0:8094")
-    serve(app, host="0.0.0.0", port=8094, threads=8)
+    port = 8094
+    ips = get_local_ips()
+    log.info("Server started on port %d -- share one of these addresses:", port)
+    for ip in ips:
+        log.info("  http://%s:%d", ip, port)
+        print_qr(f"http://{ip}:{port}")
+    if not ips:
+        log.info("  http://localhost:%d  (no network interface detected)", port)
+        print_qr(f"http://localhost:{port}")
+    serve(app, host="0.0.0.0", port=port, threads=8)
 
 
 if __name__ == "__main__":
