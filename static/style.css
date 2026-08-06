@@ -519,7 +519,7 @@ td.time {
 }
 
 .screen .clock-value {
-  font-size: 84px;
+  font-size: 64px;
 }
 
 .screen .clock-label {
@@ -530,6 +530,14 @@ td.time {
 .screen .live-left,
 .screen .live-right {
   font-size: 24px;
+}
+
+@media (max-width: 600px) {
+  .screen .live-left,
+  .screen .live-right {
+    font-size: 15px;
+    letter-spacing: 0.08em;
+  }
 }
 
 @media (max-width: 480px) {
