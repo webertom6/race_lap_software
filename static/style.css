@@ -116,6 +116,15 @@ button.danger {
   color: #fff;
 }
 
+button:not(:disabled):hover {
+  filter: brightness(0.88);
+}
+
+button:not(:disabled):active {
+  filter: brightness(0.75);
+  transform: scale(0.97);
+}
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -166,7 +175,8 @@ th {
 
 td {
   border-bottom: 1px solid var(--line);
-  padding: 10px 14px;
+  /* pad : (between lines) (betweeen columns) */
+  padding: 10px 10px;
   color: var(--text);
   font-size: 16px;
 }
@@ -367,10 +377,46 @@ td {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0; /* allow grid item to shrink below content size */
 }
 
 .op-card {
   padding: 12px;
+}
+
+/* desktop action column - option B: +1 full-width, revert small below */
+.action-th, .action-cell { white-space: nowrap; }
+
+.action-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  vertical-align: middle;
+  padding: 8px 10px;
+}
+
+.action-inc { width: 100%; }
+
+.action-revert {
+  font-size: 10px;
+  padding: 5px 8px;
+}
+
+/* mobile action row - option C: full-width row below, buttons side by side */
+.action-row-mobile { display: none; }
+
+@media (max-width: 768px) {
+  .action-th, .action-cell { display: none; }
+  .action-row-mobile { display: table-row; }
+  .action-row-mobile td {
+    padding: 4px 10px 10px;
+    border-bottom: 2px solid var(--grid);
+  }
+  .action-btns-mobile {
+    display: flex;
+    gap: 8px;
+  }
+  .action-btns-mobile button { flex: 1; }
 }
 
 /* scoreboard page - close to ending template shell */
@@ -518,7 +564,12 @@ td.time {
 }
 
 .screen .clock-value {
-  font-size: 84px;
+  font-size: 64px;
+}
+@media (max-width: 600px) {
+  .screen .clock-value {
+    font-size: 40px;
+  }
 }
 
 .screen .clock-label {
@@ -529,6 +580,25 @@ td.time {
 .screen .live-left,
 .screen .live-right {
   font-size: 24px;
+}
+
+@media (max-width: 600px) {
+  .screen .live-left,
+  .screen .live-right {
+    font-size: 15px;
+    letter-spacing: 0.08em;
+  }
+}
+
+@media (max-width: 480px) {
+  .op-header-inner {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+  }
+
+  .op-nav {
+    width: 100%;
+  }
 }
 
 @media (max-width: 1120px) {
@@ -554,4 +624,25 @@ td.time {
   .screen table {
     min-width: 1100px;
   }
+}
+
+@media (min-width: 2560px) {
+  .brand-small { font-size: 26px; }
+  .brand-title { font-size: 100px; }
+  .brand-meta  { font-size: 36px; }
+
+  .top-main { padding: 32px 44px; gap: 28px; }
+
+  .live-strip { height: 64px; padding: 0 44px; }
+  .screen .live-left,
+  .screen .live-right { font-size: 44px; letter-spacing: 0.18em; }
+
+  .screen .clock-value { font-size: 150px; }
+  .screen .clock-label { font-size: 48px; letter-spacing: 0.3em; }
+
+  .phase-pill { font-size: 58px; padding: 8px 20px; }
+
+  .screen th  { font-size: 54px; padding: 18px 36px 20px; }
+  .screen td  { font-size: 58px; padding: 18px 36px; }
+  .screen table { min-width: 0; }
 }
