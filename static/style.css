@@ -33,14 +33,6 @@ body {
   padding: 16px;
 }
 
-.display {
-  font-family: "Barlow Condensed", sans-serif;
-}
-
-.mono {
-  font-family: "Roboto Mono", ui-monospace, monospace;
-}
-
 .error-box {
   min-height: 24px;
   color: var(--danger);
@@ -53,6 +45,14 @@ body {
   flex-wrap: wrap;
   gap: 10px;
   align-items: end;
+}
+
+.form-actions {
+  margin-top: 12px;
+}
+
+.button-block {
+  width: 100%;
 }
 
 .field {
@@ -74,7 +74,11 @@ select,
 button {
   border-radius: 0;
   border: 1px solid var(--grid);
-  font-family: "Barlow", system-ui, sans-serif;
+  font-family: "Barlow", system-ui, sans-serif; 
+}
+
+button {
+  text-transform: uppercase;
 }
 
 input,
@@ -95,7 +99,6 @@ button {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 button.secondary {
@@ -130,10 +133,18 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.is-hidden {
+  display: none;
+}
+
 .card {
   background: var(--card);
   border: 1px solid var(--grid);
   padding: 14px;
+}
+
+.card-compact {
+  padding: 12px;
 }
 
 .card h2 {
@@ -316,12 +327,6 @@ td {
   gap: 12px;
 }
 
-.op-status-card {
-  background: #fff;
-  border: 1px solid var(--grid);
-  padding: 12px;
-}
-
 .op-status-label {
   margin: 0;
   color: #6a7689;
@@ -378,10 +383,6 @@ td {
   flex-direction: column;
   gap: 12px;
   min-width: 0; /* allow grid item to shrink below content size */
-}
-
-.op-card {
-  padding: 12px;
 }
 
 /* desktop action column - option B: +1 full-width, revert small below */
