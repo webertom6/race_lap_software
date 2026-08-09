@@ -4,38 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tandem Race - Scoreboard</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=2">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
-<body class="screen">
+<body class="sb-screen">
   <div class="page">
-    <header class="top-shell">
-      <div class="top-main">
+    <header class="sb-top-shell">
+      <div class="sb-top-main">
         <div>
-          <p class="brand-small">Tandem Race</p>
-          <h1 class="brand-title">Live Timing</h1>
-          <p id="brand-meta" class="brand-meta">Lap 9 km · 180 min</p>
+          <p class="sb-brand-small text-display">Tandem Race</p>
+          <h1 class="sb-brand-title text-display">Live Timing</h1>
+          <p id="brand-meta" class="sb-brand-meta text-mono">Lap 9 km · 180 min</p>
         </div>
-        <div class="clock-wrap">
-          <p class="clock-label">Race clock</p>
-          <p id="race-clock-elapsed" class="clock-value">00:00:00</p>
+        <div class="sb-clock-wrap">
+          <p class="sb-clock-label text-display">Race clock</p>
+          <p id="race-clock-elapsed" class="sb-clock-value text-mono">00:00:00</p>
         </div>
-        <div class="clock-wrap">
-          <p class="clock-label">Remaining</p>
-          <p id="race-clock-remaining" class="clock-value">03:00:00</p>
+        <div class="sb-clock-wrap">
+          <p class="sb-clock-label text-display">Remaining</p>
+          <p id="race-clock-remaining" class="sb-clock-value text-mono">03:00:00</p>
         </div>
-        <div class="clock-wrap">
-          <p class="clock-label">Mode</p>
-          <span id="phase-pill" class="phase-pill">phase: registry</span>
+        <div class="sb-clock-wrap">
+          <p class="sb-clock-label text-display">Mode</p>
+          <span id="phase-pill" class="sb-phase-pill text-display">phase: registry</span>
         </div>
       </div>
-      <div class="live-strip">
-        <p class="live-left">· Live</p>
-        <p class="live-right">Leaderboard display</p>
+      <div class="sb-live-strip">
+        <p class="sb-live-left text-mono">· Live</p>
+        <p class="sb-live-right text-mono">Leaderboard display</p>
       </div>
     </header>
 
-    <section class="card score-panel">
+    <section class="card sb-score-panel">
       <div class="table-wrap">
         <table>
           <thead>
@@ -53,19 +53,20 @@
       </div>
     </section>
 
-    <section id="charts-section" class="card score-panel charts-panel" style="display: none;">
+    <section id="charts-section" class="card sb-score-panel sb-charts-panel is-hidden">
       <h2>Final charts</h2>
-      <div class="charts">
-        <div class="chart-box">
+      <div class="sb-charts">
+        <div class="sb-chart-box">
           <canvas id="laps-over-time-chart"></canvas>
         </div>
-        <div class="chart-box">
+        <div class="sb-chart-box">
           <canvas id="lap-duration-chart"></canvas>
         </div>
       </div>
     </section>
   </div>
 
+  <script src="/static/shared.js"></script>
   <script src="/static/scoreboard.js"></script>
 </body>
 </html>
