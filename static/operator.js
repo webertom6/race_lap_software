@@ -1,3 +1,5 @@
+let configDirty = false;
+
 function setError(message) {
   document.getElementById("error-box").textContent = message || "";
 }
@@ -82,10 +84,10 @@ function updatePhaseControls(state) {
   document.getElementById("manual-lap-form").querySelector("button").disabled = state.phase !== "race";
   document.getElementById("magic-lap-form").querySelector("button").disabled = state.phase !== "race";
 
-  const distEl = document.getElementById("lap-distance");
-  const durEl = document.getElementById("race-duration");
-  if (document.activeElement !== distEl) distEl.value = state.lap_distance_km;
-  if (document.activeElement !== durEl) durEl.value = Math.round(state.race_duration_seconds / 60);
+  if (!configDirty) {
+    document.getElementById("lap-distance").value = state.lap_distance_km;
+    document.getElementById("race-duration").value = Math.round(state.race_duration_seconds / 60);
+  }
 }
 
 async function refreshState() {
@@ -111,8 +113,12 @@ document.getElementById("config-form").addEventListener("submit", async (event) 
     setError(res.error);
     return;
   }
+  configDirty = false;
   refreshState();
 });
+
+document.getElementById("lap-distance").addEventListener("input", () => { configDirty = true; });
+document.getElementById("race-duration").addEventListener("input", () => { configDirty = true; });
 
 document.getElementById("register-form").addEventListener("submit", async (event) => {
   event.preventDefault();
