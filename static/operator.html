@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tandem Race - Operator</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=2">
 </head>
 <body class="operator-page">
   <header class="op-header">
@@ -12,16 +12,13 @@
         <div class="op-brand">
           <div class="op-logo-square"></div>
           <div>
-            <p class="op-brand-title">TANDEM · LAP TIMING</p>
+            <p class="op-brand-title text-label">TANDEM · LAP TIMING</p>
             <p class="op-brand-subtitle">OPERATOR CONSOLE</p>
           </div>
         </div>
         <div class="op-nav">
           <button type="button" class="op-nav-active">Operator</button>
-          <a class="op-nav-link" href="/scoreboard">Open Scoreboard
-            <i class="ph ph-arrow-square-out text-sm ml-1"></i>
-          </a>
-
+          <a class="op-nav-link" href="/scoreboard">Open Scoreboard</a>
         </div>
     </div>
   </header>
@@ -30,18 +27,18 @@
     <div class="error-box" id="error-box"></div>
 
     <section class="op-status-grid">
-      <div class="op-status-card">
-        <p class="op-status-label">Status</p>
-        <p id="phase-pill" class="op-status-phase">phase: registry</p>
+      <div class="card card-compact">
+        <p class="op-status-label text-label">Status</p>
+        <p id="phase-pill" class="op-status-phase text-display">phase: registry</p>
         <p class="op-status-meta">live operator controls</p>
       </div>
-      <div class="op-status-card">
-        <p class="op-status-label">Elapsed</p>
-        <p id="race-clock-elapsed" class="op-status-time">00:00:00</p>
+      <div class="card card-compact">
+        <p class="op-status-label text-label">Elapsed</p>
+        <p id="race-clock-elapsed" class="op-status-time text-mono">00:00:00</p>
       </div>
-      <div class="op-status-card">
-        <p class="op-status-label">Remaining</p>
-        <p id="race-clock-remaining" class="op-status-time">03:00:00</p>
+      <div class="card card-compact">
+        <p class="op-status-label text-label">Remaining</p>
+        <p id="race-clock-remaining" class="op-status-time text-mono">03:00:00</p>
       </div>
     </section>
 
@@ -51,7 +48,7 @@
 
     <div class="op-layout">
       <div class="op-stack">
-        <section class="card op-card">
+        <section class="card card-compact">
           <h2>Race configuration</h2>
           <p class="card-subtitle">Set lap distance and duration before race start</p>
           <form id="config-form">
@@ -67,13 +64,13 @@
                 </label>
               </div>
             </div>
-            <div class="row" style="margin-top: 12px;">
-              <button type="submit" id="save-config-btn" style="width: 100%;">Save configuration</button>
+            <div class="row form-actions">
+              <button type="submit" id="save-config-btn" class="button-block">Save configuration</button>
             </div>
           </form>
         </section>
 
-        <section class="card op-card">
+        <section class="card card-compact">
           <h2>Add team</h2>
           <form id="register-form">
             <div class="row">
@@ -88,23 +85,23 @@
                 </label>
               </div>
             </div>
-            <div class="row" style="margin-top: 12px;">
-              <button type="submit" style="width: 100%;">+ Register team</button>
+            <div class="row form-actions">
+              <button type="submit" class="button-block">+ Register team</button>
             </div>
           </form>
-          <div class="row" style="margin-top: 12px;">
-            <button id="start-race-btn" class="important" style="width: 100%;">End registration - start race</button>
+          <div class="row form-actions">
+            <button id="start-race-btn" class="important button-block">End registration - start race</button>
           </div>
         </section>
       </div>
 
       <div class="op-stack">
-        <section class="card op-card">
+        <section class="card card-compact">
           <h2>Phase 2 and 3 controls</h2>
           <div class="row">
             <button id="finish-race-btn" class="important">Finish race</button>
           </div>
-          <form id="manual-lap-form" class="row" style="margin-top: 12px;">
+          <form id="manual-lap-form" class="row form-actions">
             <div class="field">
               <label>Manual lap team
                 <select id="manual-team-id"></select>
@@ -117,7 +114,7 @@
             </div>
             <button type="submit">Add manual lap</button>
           </form>
-          <form id="magic-lap-form" class="row" style="margin-top: 12px;">
+          <form id="magic-lap-form" class="row form-actions">
             <div class="field">
               <label>Magic lap team
                 <select id="magic-team-id"></select>
@@ -127,7 +124,7 @@
           </form>
         </section>
 
-        <section class="card op-card">
+        <section class="card card-compact">
           <h2>Leaderboard and team actions</h2>
           <div class="table-wrap">
             <table>
@@ -147,15 +144,14 @@
           </div>
         </section>
 
-        <section class="card op-card">
+        <section class="card card-compact">
           <h2>Recent audit log</h2>
           <div id="audit-list" class="audit-list"></div>
         </section>
       </div>
     </div>
   </div>
-
-  </div>
+  <script src="/static/shared.js"></script>
   <script src="/static/operator.js"></script>
 </body>
 </html>

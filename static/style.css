@@ -1,6 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&family=Roboto+Mono:wght@500;700&display=swap");
 
+/* 1. Foundation */
+
 :root {
+  --font-body: "Barlow", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --navy: #061534;
   --red: #e11d22;
   --blue: #005eff;
@@ -23,7 +28,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: "Barlow", system-ui, sans-serif;
+  font-family: var(--font-body);
 }
 
 .page {
@@ -31,15 +36,10 @@ body {
   max-width: 1280px;
   margin: 0 auto;
   padding: 16px;
+  background: var(--line);
 }
 
-.display {
-  font-family: "Barlow Condensed", sans-serif;
-}
-
-.mono {
-  font-family: "Roboto Mono", ui-monospace, monospace;
-}
+/* 2. Shared elements */
 
 .error-box {
   min-height: 24px;
@@ -53,6 +53,14 @@ body {
   flex-wrap: wrap;
   gap: 10px;
   align-items: end;
+}
+
+.form-actions {
+  margin-top: 12px;
+}
+
+.button-block {
+  width: 100%;
 }
 
 .field {
@@ -74,7 +82,28 @@ select,
 button {
   border-radius: 0;
   border: 1px solid var(--grid);
-  font-family: "Barlow", system-ui, sans-serif;
+  font-family: var(--font-body);
+}
+
+.text-display,
+.card h2,
+th,
+.sb-screen td {
+  font-family: var(--font-display);
+}
+
+.text-mono,
+.time {
+  font-family: var(--font-mono);
+}
+
+.text-label,
+label {
+  text-transform: uppercase;
+}
+
+button {
+  text-transform: uppercase;
 }
 
 input,
@@ -95,7 +124,6 @@ button {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 button.secondary {
@@ -130,16 +158,25 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* 3. Shared components and utilities */
+
+.is-hidden {
+  display: none;
+}
+
 .card {
   background: var(--card);
   border: 1px solid var(--grid);
   padding: 14px;
 }
 
+.card-compact {
+  padding: 12px;
+}
+
 .card h2 {
   margin: 0 0 10px;
   color: var(--text);
-  font-family: "Barlow Condensed", sans-serif;
   font-size: 27px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -167,7 +204,6 @@ th {
   padding: 10px 14px;
   border-bottom: 2px solid var(--line);
   color: #031533;
-  font-family: "Barlow Condensed", sans-serif;
   font-size: 22px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -191,7 +227,6 @@ td {
 }
 
 .time {
-  font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 16px;
 }
 
@@ -217,22 +252,19 @@ td {
   border-bottom: none;
 }
 
-.charts {
+.sb-charts {
   display: grid;
   grid-template-columns: 1fr;
   gap: 14px;
 }
 
-.chart-box {
+.sb-chart-box {
   background: #fff;
   border: 1px solid #e2ebf6;
   padding: 12px;
 }
 
-/* operator page - close to landing template layout */
-.operator-page .page {
-  max-width: 1280px;
-}
+/* 4. Operator layout */
 
 .op-header {
   background: #fff;
@@ -316,12 +348,6 @@ td {
   gap: 12px;
 }
 
-.op-status-card {
-  background: #fff;
-  border: 1px solid var(--grid);
-  padding: 12px;
-}
-
 .op-status-label {
   margin: 0;
   color: #6a7689;
@@ -334,7 +360,6 @@ td {
 .op-status-phase {
   margin: 8px 0 0;
   color: var(--blue);
-  font-family: "Barlow Condensed", sans-serif;
   font-size: 28px;
   font-weight: 700;
   text-transform: uppercase;
@@ -343,7 +368,6 @@ td {
 .op-status-time {
   margin: 8px 0 0;
   color: #061534;
-  font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 20px;
   font-weight: 700;
   line-height: 1.25;
@@ -380,11 +404,7 @@ td {
   min-width: 0; /* allow grid item to shrink below content size */
 }
 
-.op-card {
-  padding: 12px;
-}
-
-/* desktop action column - option B: +1 full-width, revert small below */
+/* Operator leaderboard actions */
 .action-th, .action-cell { white-space: nowrap; }
 
 .action-cell {
@@ -402,39 +422,24 @@ td {
   padding: 5px 8px;
 }
 
-/* mobile action row - option C: full-width row below, buttons side by side */
 .action-row-mobile { display: none; }
 
-@media (max-width: 768px) {
-  .action-th, .action-cell { display: none; }
-  .action-row-mobile { display: table-row; }
-  .action-row-mobile td {
-    padding: 4px 10px 10px;
-    border-bottom: 2px solid var(--grid);
-  }
-  .action-btns-mobile {
-    display: flex;
-    gap: 8px;
-  }
-  .action-btns-mobile button { flex: 1; }
-}
-
-/* scoreboard page - close to ending template shell */
-.screen {
+/* 5. Scoreboard layout */
+.sb-screen {
   background: #fff;
 }
 
-.screen .page {
+.sb-screen .page {
   max-width: 100%;
   padding: 0;
 }
 
-.top-shell {
+.sb-top-shell {
   background: var(--navy);
   color: #fff;
 }
 
-.top-main {
+.sb-top-main {
   display: grid;
   grid-template-columns: 1.1fr 2fr 2fr 1fr;
   gap: 16px;
@@ -442,53 +447,59 @@ td {
   padding: 16px 22px;
 }
 
-.brand-small {
+.sb-brand-small {
   margin: 0;
-  font-family: "Barlow Condensed", sans-serif;
   font-size: 14px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
   opacity: 0.8;
 }
 
-.brand-title {
+.sb-brand-title {
   margin: 4px 0 0;
-  font-family: "Barlow Condensed", sans-serif;
   font-size: 56px;
   font-weight: 800;
   line-height: 0.95;
   text-transform: uppercase;
 }
 
-.brand-meta {
+.sb-brand-meta {
   margin: 6px 0 0;
-  font-family: "Roboto Mono", ui-monospace, monospace;
   font-size: 20px;
   opacity: 0.88;
 }
 
-.clock-wrap {
+.sb-clock-wrap {
   text-align: center;
 }
 
-.clock-label {
+.sb-clock-label {
   margin: 0 0 4px;
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 22px;
+  font-size: 26px;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.3em;
   opacity: 0.8;
 }
 
-.clock-value {
+.sb-clock-value {
   margin: 0;
-  font-family: "Roboto Mono", ui-monospace, monospace;
-  font-size: 56px;
+  font-size: 64px;
   font-weight: 700;
   line-height: 0.95;
 }
 
-.live-strip {
+.sb-phase-pill {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 32px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sb-live-strip {
   height: 34px;
   background: var(--red);
   color: #fff;
@@ -499,60 +510,37 @@ td {
   padding: 0 22px;
 }
 
-.live-left,
-.live-right {
+.sb-live-left,
+.sb-live-right {
   margin: 0;
-  font-family: "Roboto Mono", ui-monospace, monospace;
-  font-size: 15px;
+  font-size: 24px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-.phase-pill {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  color: #fff;
-  padding: 4px 10px;
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 32px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.score-panel {
+.sb-score-panel {
   border-left: none;
   border-right: none;
   border-top: none;
 }
 
-.score-heading {
-  font-size: 40px;
-  letter-spacing: 0.06em;
-}
-
-.charts-panel {
+.sb-charts-panel {
   margin-top: 16px;
 }
 
-.screen .table-wrap {
+.sb-screen .table-wrap {
   border-left: none;
   border-right: none;
 }
 
-.screen th {
+.sb-screen th {
   font-size: 30px;
   padding: 10px 20px 12px;
 }
 
-.screen td {
+.sb-screen td {
   font-size: 32px;
   padding: 10px 20px;
-  font-family: "Barlow Condensed", sans-serif;
-}
-
-td.time {
-  font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .best-lap {
@@ -563,28 +551,40 @@ td.time {
   color: var(--purple);
 }
 
-.screen .clock-value {
-  font-size: 64px;
-}
-@media (max-width: 600px) {
-  .screen .clock-value {
-    font-size: 40px;
+/* 6. Responsive overrides */
+
+@media (max-width: 768px) {
+  .action-th,
+  .action-cell {
+    display: none;
+  }
+
+  .action-row-mobile {
+    display: table-row;
+  }
+
+  .action-row-mobile td {
+    padding: 4px 10px 10px;
+    border-bottom: 2px solid var(--grid);
+  }
+
+  .action-btns-mobile {
+    display: flex;
+    gap: 8px;
+  }
+
+  .action-btns-mobile button {
+    flex: 1;
   }
 }
 
-.screen .clock-label {
-  font-size: 26px;
-  letter-spacing: 0.3em;
-}
-
-.screen .live-left,
-.screen .live-right {
-  font-size: 24px;
-}
-
 @media (max-width: 600px) {
-  .screen .live-left,
-  .screen .live-right {
+  .sb-screen .sb-clock-value {
+    font-size: 40px;
+  }
+
+  .sb-screen .sb-live-left,
+  .sb-screen .sb-live-right {
     font-size: 15px;
     letter-spacing: 0.08em;
   }
@@ -610,39 +610,39 @@ td.time {
     grid-template-columns: 1fr;
   }
 
-  .top-main {
+  .sb-top-main {
     grid-template-columns: 1fr;
     text-align: left;
   }
 
-  .clock-wrap {
+  .sb-clock-wrap {
     text-align: left;
   }
 }
 
 @media (max-width: 1280px) {
-  .screen table {
+  .sb-screen table {
     min-width: 1100px;
   }
 }
 
 @media (min-width: 2560px) {
-  .brand-small { font-size: 26px; }
-  .brand-title { font-size: 100px; }
-  .brand-meta  { font-size: 36px; }
+  .sb-brand-small { font-size: 26px; }
+  .sb-brand-title { font-size: 100px; }
+  .sb-brand-meta  { font-size: 36px; }
 
-  .top-main { padding: 32px 44px; gap: 28px; }
+  .sb-top-main { padding: 32px 44px; gap: 28px; }
 
-  .live-strip { height: 64px; padding: 0 44px; }
-  .screen .live-left,
-  .screen .live-right { font-size: 44px; letter-spacing: 0.18em; }
+  .sb-live-strip { height: 64px; padding: 0 44px; }
+  .sb-screen .sb-live-left,
+  .sb-screen .sb-live-right { font-size: 44px; letter-spacing: 0.18em; }
 
-  .screen .clock-value { font-size: 150px; }
-  .screen .clock-label { font-size: 48px; letter-spacing: 0.3em; }
+  .sb-screen .sb-clock-value { font-size: 150px; }
+  .sb-screen .sb-clock-label { font-size: 48px; letter-spacing: 0.3em; }
 
-  .phase-pill { font-size: 58px; padding: 8px 20px; }
+  .sb-phase-pill { font-size: 58px; padding: 8px 20px; }
 
-  .screen th  { font-size: 54px; padding: 18px 36px 20px; }
-  .screen td  { font-size: 58px; padding: 18px 36px; }
-  .screen table { min-width: 0; }
+  .sb-screen th  { font-size: 54px; padding: 18px 36px 20px; }
+  .sb-screen td  { font-size: 58px; padding: 18px 36px; }
+  .sb-screen table { min-width: 0; }
 }
