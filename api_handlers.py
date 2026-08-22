@@ -271,6 +271,14 @@ def register_routes(app, state):
             state.push_audit("finish-race", "race finished and results locked")
             return ok({"state": state.snapshot()})
 
+    @app.post("/api/toggle-auto-scroll")
+    def api_toggle_auto_scroll():
+        response.content_type = "application/json"
+        with state.lock:
+            state.auto_scroll = not state.auto_scroll
+            state.push_audit("toggle-auto-scroll", f"auto-scroll {'enabled' if state.auto_scroll else 'disabled'}")
+            return ok({"state": state.snapshot()})
+
     @app.post("/api/reset-all")
     def api_reset_all():
         response.content_type = "application/json"

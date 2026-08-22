@@ -390,6 +390,15 @@ td {
   font-size: 32px;
 }
 
+.op-global {
+  margin-top: 12px;
+}
+
+button.active {
+  background: var(--green);
+  border-color: var(--green);
+}
+
 .op-layout {
   margin-top: 12px;
   display: grid;

@@ -88,6 +88,10 @@ function updatePhaseControls(state) {
     document.getElementById("lap-distance").value = state.lap_distance_km;
     document.getElementById("race-duration").value = Math.round(state.race_duration_seconds / 60);
   }
+
+  const autoScrollBtn = document.getElementById("auto-scroll-btn");
+  autoScrollBtn.textContent = `Auto-scroll leaderboard: ${state.auto_scroll ? "ON" : "OFF"}`;
+  autoScrollBtn.classList.toggle("active", state.auto_scroll);
 }
 
 async function refreshState() {
@@ -157,6 +161,11 @@ document.getElementById("reset-all-btn").addEventListener("click", async () => {
     return;
   }
   await postJSON("/api/reset-all", {});
+  refreshState();
+});
+
+document.getElementById("auto-scroll-btn").addEventListener("click", async () => {
+  await postJSON("/api/toggle-auto-scroll", {});
   refreshState();
 });
 
