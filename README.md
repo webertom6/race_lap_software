@@ -1,4 +1,4 @@
-# tandem race app
+# Race Lap App
 
 <!-- description -->
 This side-project is destined for youth movement, association, etc. making a **race with laps event** which want to have a free software to handle the race data and display the leaderboard to the public and **can work without WIFI**. This is clearly not my field but, I didn't want to see my team use AI-slop (or worse buy it).

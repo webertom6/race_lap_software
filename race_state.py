@@ -23,6 +23,7 @@ class RaceState:
         self.teams = []
         self.next_team_id = 1
         self.audit = []
+        self.auto_scroll = False
 
     def reset(self):
         self._reset_fields()
@@ -144,4 +145,5 @@ class RaceState:
             "leaderboard": self.build_leaderboard(now_value),
             "charts": self.build_charts_data(),
             "audit": self.audit[-100:],
+            "auto_scroll": self.auto_scroll,
         }
