@@ -36,6 +36,8 @@ def main():
     if not ips:
         log.info("  http://localhost:%d  (no network interface detected)", port)
         print_qr(f"http://localhost:{port}")
+    log.info("  http://localhost:%d  (for local)", port)
+    print_qr(f"http://localhost:{port}")
     serve(app, host="0.0.0.0", port=port, threads=8)
 
 

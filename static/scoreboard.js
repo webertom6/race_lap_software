@@ -1,4 +1,4 @@
-const AUTO_SCROLL_SPEED = 40; // pixels per second
+const AUTO_SCROLL_SPEED = 30; // pixels per second
 
 let autoScrollActive = false;
 let autoScrollLastTime = null;
