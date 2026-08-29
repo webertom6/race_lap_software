@@ -547,6 +547,14 @@ button.active {
 .sb-screen .table-wrap {
   border-left: none;
   border-right: none;
+  overflow: visible; /* keep window as the sole scroll context so sticky headers track page scroll */
+}
+
+.sb-screen thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
 }
 
 .sb-screen th {
