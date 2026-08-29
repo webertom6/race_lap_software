@@ -2,6 +2,7 @@ const AUTO_SCROLL_SPEED = 30; // pixels per second
 
 let autoScrollActive = false;
 let autoScrollLastTime = null;
+let autoScrollDirection = 1; // 1 = down, -1 = up
 
 function autoScrollStep(timestamp) {
   if (!autoScrollActive) return;
@@ -11,8 +12,15 @@ function autoScrollStep(timestamp) {
 
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   if (maxScroll > 0) {
-    const next = window.scrollY + AUTO_SCROLL_SPEED * dt;
-    window.scrollTo(0, next >= maxScroll ? 0 : next);
+    let next = window.scrollY + AUTO_SCROLL_SPEED * dt * autoScrollDirection;
+    if (next >= maxScroll) {
+      next = maxScroll;
+      autoScrollDirection = -1;
+    } else if (next <= 0) {
+      next = 0;
+      autoScrollDirection = 1;
+    }
+    window.scrollTo(0, next);
   }
   requestAnimationFrame(autoScrollStep);
 }
@@ -21,6 +29,7 @@ function setAutoScroll(enabled) {
   if (enabled === autoScrollActive) return;
   autoScrollActive = enabled;
   autoScrollLastTime = null;
+  autoScrollDirection = 1;
   if (enabled) requestAnimationFrame(autoScrollStep);
 }
 
