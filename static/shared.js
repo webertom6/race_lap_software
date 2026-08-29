@@ -12,23 +12,19 @@ function formatSeconds(total) {
 function renderClock(state) {
   const clockEl = document.getElementById("race-clock-elapsed") || document.getElementById("race-clock");
   const clockRem = document.getElementById("race-clock-remaining");
-  if (!clockEl) {
+  if (!clockEl && !clockRem) {
     return;
   }
   if (!state.race_start_at) {
-    clockEl.textContent = "Waiting";
-    if (clockRem) {
-      clockRem.textContent = "";
-    }
+    if (clockEl) clockEl.textContent = "Waiting";
+    if (clockRem) clockRem.textContent = "Waiting";
     return;
   }
   const endAt = state.phase === "finished" ? state.race_end_at : state.now;
   const elapsed = Math.max(0, endAt - state.race_start_at);
   const remaining = Math.max(0, state.race_duration_seconds - elapsed);
-  clockEl.textContent = formatSeconds(elapsed);
-  if (clockRem) {
-    clockRem.textContent = formatSeconds(remaining);
-  }
+  if (clockEl) clockEl.textContent = formatSeconds(elapsed);
+  if (clockRem) clockRem.textContent = formatSeconds(remaining);
 }
 
 async function fetchState() {

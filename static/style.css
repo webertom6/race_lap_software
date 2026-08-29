@@ -482,6 +482,13 @@ button.active {
   text-align: center;
 }
 
+.sb-qr {
+  width: 80px;
+  height: 80px;
+  background: #fff;
+  padding: 4px;
+}
+
 .sb-clock-label {
   margin: 0 0 4px;
   font-size: 26px;
@@ -654,4 +661,5 @@ button.active {
   .sb-screen th  { font-size: 54px; padding: 18px 36px 20px; }
   .sb-screen td  { font-size: 58px; padding: 18px 36px; }
   .sb-screen table { min-width: 0; }
+  .sb-qr { width: 160px; height: 160px; padding: 10px; }
 }
