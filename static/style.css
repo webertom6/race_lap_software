@@ -188,6 +188,86 @@ button:disabled {
   font-size: 14px;
 }
 
+.lap-editor-row {
+  align-items: end;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid transparent;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.lap-editor-row.is-edited {
+  background: rgba(0, 94, 255, 0.06);
+  border-color: var(--blue);
+}
+
+.lap-editor-row.is-removed {
+  background: rgba(185, 28, 28, 0.06);
+  border-color: var(--danger);
+}
+
+.lap-editor-row.is-removed .lap-edit-duration {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.lap-edit-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border: 1px solid currentColor;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.lap-edit-badge-edited {
+  color: var(--blue);
+}
+
+.lap-edit-badge-removed {
+  color: var(--danger);
+}
+
+.lap-editor-pending {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--grid);
+  border-left: 3px solid var(--blue);
+}
+
+.lap-editor-pending-title {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lap-editor-pending ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+}
+
+.lap-editor-pending li strong {
+  font-family: var(--font-mono);
+}
+
+.lap-editor-preview {
+  margin-top: 12px;
+}
+
+.lap-editor-actions {
+  margin-top: 10px;
+  align-items: stretch;
+}
+
+.lap-editor-actions .important {
+  flex: 1;
+}
+
 .table-wrap {
   overflow-x: auto;
   background: #fff;

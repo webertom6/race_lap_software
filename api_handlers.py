@@ -20,6 +20,24 @@ def ok(payload=None):
     return data
 
 
+def _describe_edits(edits):
+    parts = []
+    for edit in edits:
+        try:
+            lap_label = f"lap {int(edit.get('lap_index', 0)) + 1}"
+        except (TypeError, ValueError):
+            lap_label = "lap ?"
+        if edit.get("action") == "remove":
+            parts.append(f"removed {lap_label}")
+        else:
+            try:
+                duration = float(edit.get("new_duration"))
+                parts.append(f"{lap_label} set to {duration:.1f}s")
+            except (TypeError, ValueError):
+                parts.append(f"{lap_label} edited")
+    return ", ".join(parts)
+
+
 def register_routes(app, state):
     @app.get("/")
     def operator_page():
@@ -267,6 +285,60 @@ def register_routes(app, state):
 
             state.add_lap(team, mean_duration, "magic")
             state.push_audit("magic-lap", f"team #{team['number']} magic lap ({mean_duration:.1f}s)")
+            return ok({"state": state.snapshot()})
+
+    @app.get("/api/team-laps")
+    def api_team_laps():
+        response.content_type = "application/json"
+        team_id_raw = request.query.get("team_id")
+        if team_id_raw is None:
+            return err("team_id is required")
+
+        with state.lock:
+            team = state.find_team(int(team_id_raw))
+            if not team:
+                return err("team not found")
+            laps = [
+                {"index": i, "duration_seconds": lap["duration_seconds"], "source": lap["source"]}
+                for i, lap in enumerate(team["laps"])
+            ]
+            return ok({"laps": laps})
+
+    @app.post("/api/preview-lap-edit")
+    def api_preview_lap_edit():
+        response.content_type = "application/json"
+        data = request.json or {}
+        team_id = data.get("team_id")
+        edits = data.get("edits")
+        if team_id is None or not isinstance(edits, list) or not edits:
+            return err("team_id and a non-empty edits list are required")
+
+        with state.lock:
+            if state.phase != "race":
+                return err("lap editing is only available during the race phase")
+            try:
+                row = state.preview_team_edit(int(team_id), edits)
+            except ValueError as exc:
+                return err(str(exc))
+            return ok({"preview": row})
+
+    @app.post("/api/apply-lap-edit")
+    def api_apply_lap_edit():
+        response.content_type = "application/json"
+        data = request.json or {}
+        team_id = data.get("team_id")
+        edits = data.get("edits")
+        if team_id is None or not isinstance(edits, list) or not edits:
+            return err("team_id and a non-empty edits list are required")
+
+        with state.lock:
+            if state.phase != "race":
+                return err("lap editing is only available during the race phase")
+            try:
+                team = state.apply_team_lap_edit(int(team_id), edits)
+            except ValueError as exc:
+                return err(str(exc))
+            state.push_audit("edit-lap", f"team #{team['number']} lap edit: {_describe_edits(edits)}")
             return ok({"state": state.snapshot()})
 
     @app.post("/api/finish-race")
