@@ -6,7 +6,7 @@
   <title>Tandem Race - Operator</title>
   <link rel="stylesheet" href="/static/style.css?v=2">
 </head>
-<body class="operator-page">
+<body class="operator-body">
   <header class="op-header">
     <div class="op-header-inner">
         <div class="op-brand">
@@ -48,6 +48,11 @@
 
     <section class="card op-global">
       <button id="auto-scroll-btn" class="button-block">Auto-scroll leaderboard: OFF</button>
+      <div class="row form-actions">
+        <button id="export-state-btn" type="button" class="button-block">Export state (JSON)</button>
+        <button id="import-state-btn" type="button" class="secondary button-block">Import state (JSON)</button>
+      </div>
+      <input type="file" id="import-state-file" accept="application/json" hidden>
     </section>
 
     <div class="op-layout">

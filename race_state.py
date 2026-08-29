@@ -28,6 +28,40 @@ class RaceState:
     def reset(self):
         self._reset_fields()
 
+    def to_dict(self):
+        return {
+            "phase": self.phase,
+            "race_duration_seconds": self.race_duration_seconds,
+            "lap_distance_km": self.lap_distance_km,
+            "race_start_at": self.race_start_at,
+            "race_end_at": self.race_end_at,
+            "teams": self.teams,
+            "next_team_id": self.next_team_id,
+            "audit": self.audit,
+            "auto_scroll": self.auto_scroll,
+        }
+
+    def from_dict(self, data):
+        phase = data.get("phase", "registry")
+        if phase not in ("registry", "race", "finished"):
+            raise ValueError("invalid phase")
+        teams = data.get("teams", [])
+        if not isinstance(teams, list):
+            raise ValueError("teams must be a list")
+        audit = data.get("audit", [])
+        if not isinstance(audit, list):
+            raise ValueError("audit must be a list")
+
+        self.phase = phase
+        self.race_duration_seconds = float(data.get("race_duration_seconds", 3 * 60 * 60))
+        self.lap_distance_km = float(data.get("lap_distance_km", 9))
+        self.race_start_at = data.get("race_start_at")
+        self.race_end_at = data.get("race_end_at")
+        self.teams = teams
+        self.next_team_id = int(data.get("next_team_id", 1))
+        self.audit = audit
+        self.auto_scroll = bool(data.get("auto_scroll", False))
+
     def find_team(self, team_id):
         for team in self.teams:
             if team["id"] == team_id:

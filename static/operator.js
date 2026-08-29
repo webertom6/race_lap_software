@@ -169,6 +169,31 @@ document.getElementById("auto-scroll-btn").addEventListener("click", async () =>
   refreshState();
 });
 
+document.getElementById("export-state-btn").addEventListener("click", () => {
+  window.location.href = "/api/export";
+});
+
+document.getElementById("import-state-btn").addEventListener("click", () => {
+  document.getElementById("import-state-file").click();
+});
+
+document.getElementById("import-state-file").addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  event.target.value = "";
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    const res = await postJSON("/api/import", data);
+    if (!res.ok) {
+      setError(res.error);
+      return;
+    }
+    refreshState();
+  } catch (e) {
+    setError("invalid state file");
+  }
+});
+
 document.getElementById("manual-lap-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const teamId = Number(document.getElementById("manual-team-id").value);

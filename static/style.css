@@ -217,7 +217,7 @@ td {
   font-size: 16px;
 }
 
-.operator-page tbody tr:hover td {
+.operator-body tbody tr:hover td {
   background: var(--line);
 }
 

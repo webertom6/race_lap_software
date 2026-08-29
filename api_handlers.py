@@ -179,7 +179,7 @@ def register_routes(app, state):
                 return err("team timer is not initialized")
 
             duration = now_ts() - team["lap_started_at"]
-            state.add_lap(team, duration, "button")
+            state.add_lap(team, duration, "button +1")
             state.push_audit("increment-lap", f"team #{team['number']} +1 lap")
             return ok({"state": state.snapshot()})
 
@@ -280,6 +280,28 @@ def register_routes(app, state):
             for team in state.teams:
                 team["lap_started_at"] = None
             state.push_audit("finish-race", "race finished and results locked")
+            return ok({"state": state.snapshot()})
+
+    @app.get("/api/export")
+    def api_export_state():
+        response.content_type = "application/json"
+        response.set_header("Content-Disposition", 'attachment; filename="race-state.json"')
+        with state.lock:
+            return state.to_dict()
+
+    @app.post("/api/import")
+    def api_import_state():
+        response.content_type = "application/json"
+        data = request.json
+        if not isinstance(data, dict):
+            return err("invalid state file")
+
+        with state.lock:
+            try:
+                state.from_dict(data)
+            except (TypeError, ValueError, KeyError) as exc:
+                return err(f"invalid state file: {exc}")
+            state.push_audit("import-state", "state imported from file")
             return ok({"state": state.snapshot()})
 
     @app.post("/api/toggle-auto-scroll")
