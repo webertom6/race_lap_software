@@ -441,6 +441,39 @@ button.active {
 .sb-screen .page {
   max-width: 100%;
   padding: 0;
+  padding-bottom: 48px; /* reserve space so the fixed footer never overlaps content */
+}
+
+.sb-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 16px;
+  background: var(--navy);
+  color: #fff;
+}
+
+.sb-footer-qr {
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  padding: 2px;
+}
+
+.sb-footer-credit {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.sb-footer-remaining {
+  margin-left: auto;
+  font-size: 15px;
 }
 
 .sb-top-shell {

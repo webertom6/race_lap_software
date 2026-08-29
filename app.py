@@ -27,7 +27,7 @@ register_routes(app, STATE)
 
 def main():
     from waitress import serve
-    port = 8094
+    port = 8095
     ips = get_local_ips()
     log.info("Server started on port %d -- share one of these addresses:", port)
     for ip in ips:
