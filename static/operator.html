@@ -6,7 +6,7 @@
   <title>Tandem Race - Operator</title>
   <link rel="stylesheet" href="/static/style.css?v=2">
 </head>
-<body class="operator-page">
+<body class="operator-body">
   <header class="op-header">
     <div class="op-header-inner">
         <div class="op-brand">
@@ -38,12 +38,21 @@
       </div>
       <div class="card card-compact">
         <p class="op-status-label text-label">Remaining</p>
-        <p id="race-clock-remaining" class="op-status-time text-mono">03:00:00</p>
+        <p id="race-clock-remaining" class="op-status-time text-mono js-remaining-time">03:00:00</p>
       </div>
     </section>
 
     <section class="card op-reset">
         <button id="reset-all-btn" class="danger">Reset all</button>
+    </section>
+
+    <section class="card op-global">
+      <button id="auto-scroll-btn" class="button-block">Auto-scroll leaderboard: OFF</button>
+      <div class="row form-actions">
+        <button id="export-state-btn" type="button" class="button-block">Export state (JSON)</button>
+        <button id="import-state-btn" type="button" class="secondary button-block">Import state (JSON)</button>
+      </div>
+      <input type="file" id="import-state-file" accept="application/json" hidden>
     </section>
 
     <div class="op-layout">
@@ -122,6 +131,43 @@
             </div>
             <button type="submit" class="secondary">Add magic lap (mean)</button>
           </form>
+
+          <div class="row form-actions">
+            <div class="field">
+              <label>Edit team laps
+                <select id="edit-team-id"><option value="">Select a team</option></select>
+              </label>
+            </div>
+          </div>
+          <div id="lap-editor-laps"></div>
+          <div id="lap-editor-pending" class="lap-editor-pending is-hidden"></div>
+          <div id="lap-editor-preview" class="lap-editor-preview is-hidden">
+            <table>
+              <thead>
+                <tr><th></th><th>Rank</th><th>Laps</th><th>Last lap</th><th>Best lap</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Current</td>
+                  <td id="lap-preview-current-rank"></td>
+                  <td id="lap-preview-current-laps"></td>
+                  <td id="lap-preview-current-last"></td>
+                  <td id="lap-preview-current-best"></td>
+                </tr>
+                <tr>
+                  <td>New</td>
+                  <td id="lap-preview-new-rank"></td>
+                  <td id="lap-preview-new-laps"></td>
+                  <td id="lap-preview-new-last"></td>
+                  <td id="lap-preview-new-best"></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="row lap-editor-actions">
+              <button id="lap-editor-cancel-btn" type="button" class="secondary">Cancel all</button>
+              <button id="lap-editor-confirm-btn" type="button" class="important button-block">Confirm change</button>
+            </div>
+          </div>
         </section>
 
         <section class="card card-compact">

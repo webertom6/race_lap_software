@@ -2,6 +2,10 @@
 .venv/
 __pycache__/
 
+# runtime data
+race_state_autosave.json
+race_state_autosave.json.tmp
+
 # perso
 docs/
 template/

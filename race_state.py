@@ -12,6 +12,7 @@ class RaceState:
 
     def __init__(self):
         self.lock = Lock()
+        self.on_change = None  # optional callable, set externally (e.g. autosave)
         self._reset_fields()
 
     def _reset_fields(self):
@@ -23,9 +24,68 @@ class RaceState:
         self.teams = []
         self.next_team_id = 1
         self.audit = []
+        self.auto_scroll = False
 
     def reset(self):
         self._reset_fields()
+        if self.on_change:
+            self.on_change()
+
+    def to_dict(self):
+        return {
+            "phase": self.phase,
+            "race_duration_seconds": self.race_duration_seconds,
+            "lap_distance_km": self.lap_distance_km,
+            "race_start_at": self.race_start_at,
+            "race_end_at": self.race_end_at,
+            "teams": self.teams,
+            "next_team_id": self.next_team_id,
+            "audit": self.audit,
+            "auto_scroll": self.auto_scroll,
+            "saved_at": now_ts(),
+        }
+
+    def from_dict(self, data):
+        """Restore state from a to_dict() snapshot. If the snapshot was taken
+        mid-race, shift race_start_at/lap_started_at/crossing_at forward by the
+        real-world gap since it was saved, so the resumed race continues from
+        where it left off instead of appearing to have kept running the whole
+        time it was frozen on disk. Audit timestamps are left untouched since
+        they record when actions actually happened in real life.
+        Returns the gap (seconds) that was applied, or 0 if none was needed.
+        """
+        phase = data.get("phase", "registry")
+        if phase not in ("registry", "race", "finished"):
+            raise ValueError("invalid phase")
+        teams = data.get("teams", [])
+        if not isinstance(teams, list):
+            raise ValueError("teams must be a list")
+        audit = data.get("audit", [])
+        if not isinstance(audit, list):
+            raise ValueError("audit must be a list")
+
+        self.phase = phase
+        self.race_duration_seconds = float(data.get("race_duration_seconds", 3 * 60 * 60))
+        self.lap_distance_km = float(data.get("lap_distance_km", 9))
+        self.race_start_at = data.get("race_start_at")
+        self.race_end_at = data.get("race_end_at")
+        self.teams = teams
+        self.next_team_id = int(data.get("next_team_id", 1))
+        self.audit = audit
+        self.auto_scroll = bool(data.get("auto_scroll", False))
+
+        gap = 0.0
+        saved_at = data.get("saved_at")
+        if self.phase == "race" and self.race_start_at is not None and saved_at is not None:
+            gap = max(0.0, now_ts() - float(saved_at))
+            if gap > 0:
+                self.race_start_at += gap
+                for team in self.teams:
+                    if team.get("lap_started_at") is not None:
+                        team["lap_started_at"] += gap
+                    for lap in team.get("laps", []):
+                        lap["crossing_at"] += gap
+        return gap
 
     def find_team(self, team_id):
         for team in self.teams:
@@ -37,6 +97,8 @@ class RaceState:
         self.audit.append({"at": now_ts(), "action": action, "message": message})
         if len(self.audit) > 500:
             self.audit = self.audit[-500:]
+        if self.on_change:
+            self.on_change()
 
     def add_lap(self, team, duration_seconds, source):
         crossing = now_ts()
@@ -51,6 +113,84 @@ class RaceState:
             }
         )
         team["lap_started_at"] = crossing
+
+    @staticmethod
+    def _edit_team_laps(team, edits, race_start_at=None):
+        """Apply a batch of edits (list of {lap_index, action, new_duration}) to one
+        team, atomically: the whole batch is validated against the original lap
+        list before anything is mutated, so one invalid entry rejects all of them.
+        lap_index always refers to the position in the ORIGINAL (pre-batch) list.
+        """
+        if not edits:
+            raise ValueError("no edits provided")
+
+        laps = team["laps"]
+        original_len = len(laps)
+        normalized = []
+        seen_indices = set()
+        for edit in edits:
+            try:
+                lap_index = int(edit.get("lap_index"))
+            except (TypeError, ValueError):
+                raise ValueError("lap_index must be an integer")
+            if lap_index < 0 or lap_index >= original_len:
+                raise ValueError(f"lap index {lap_index} out of range")
+            if lap_index in seen_indices:
+                raise ValueError(f"lap index {lap_index} targeted by more than one edit")
+            seen_indices.add(lap_index)
+
+            action = edit.get("action")
+            if action == "edit":
+                new_duration = edit.get("new_duration")
+                if new_duration is None:
+                    raise ValueError("new_duration is required for edit")
+                new_duration = float(new_duration)
+                if new_duration <= 0:
+                    raise ValueError("duration must be > 0")
+                normalized.append({"lap_index": lap_index, "action": "edit", "new_duration": new_duration})
+            elif action == "remove":
+                normalized.append({"lap_index": lap_index, "action": "remove"})
+            else:
+                raise ValueError(f"invalid action: {action}")
+
+        # durations first (indices stay stable), then removals highest-index-first
+        # so popping never shifts an index we still need to remove or already edited
+        for edit in normalized:
+            if edit["action"] == "edit":
+                laps[edit["lap_index"]]["duration_seconds"] = edit["new_duration"]
+
+        remove_indices = sorted(
+            (edit["lap_index"] for edit in normalized if edit["action"] == "remove"), reverse=True
+        )
+        for lap_index in remove_indices:
+            was_last = lap_index == len(laps) - 1
+            laps.pop(lap_index)
+            if was_last:
+                if laps:
+                    team["lap_started_at"] = laps[-1]["crossing_at"]
+                elif race_start_at is not None:
+                    team["lap_started_at"] = race_start_at
+                else:
+                    team["lap_started_at"] = None
+
+    def preview_team_edit(self, team_id, edits):
+        team = self.find_team(team_id)
+        if not team:
+            raise ValueError("team not found")
+
+        team_copy = {**team, "laps": [dict(lap) for lap in team["laps"]]}
+        self._edit_team_laps(team_copy, edits, race_start_at=self.race_start_at)
+
+        now_value = now_ts()
+        temp_teams = [team_copy if t["id"] == team_id else t for t in self.teams]
+        return next(row for row in self.build_leaderboard(now_value, teams=temp_teams) if row["id"] == team_id)
+
+    def apply_team_lap_edit(self, team_id, edits):
+        team = self.find_team(team_id)
+        if not team:
+            raise ValueError("team not found")
+        self._edit_team_laps(team, edits, race_start_at=self.race_start_at)
+        return team
 
     @staticmethod
     def mean_lap_duration_for_team(team):
@@ -88,8 +228,9 @@ class RaceState:
             "last_crossing_at": last_crossing,
         }
 
-    def build_leaderboard(self, now_value):
-        items = [self.team_snapshot(team, now_value) for team in self.teams]
+    def build_leaderboard(self, now_value, teams=None):
+        source = self.teams if teams is None else teams
+        items = [self.team_snapshot(team, now_value) for team in source]
         items.sort(
             key=lambda t: (
                 -t["laps_count"],
@@ -144,4 +285,5 @@ class RaceState:
             "leaderboard": self.build_leaderboard(now_value),
             "charts": self.build_charts_data(),
             "audit": self.audit[-100:],
+            "auto_scroll": self.auto_scroll,
         }

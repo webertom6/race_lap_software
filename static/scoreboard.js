@@ -1,3 +1,38 @@
+const AUTO_SCROLL_SPEED = 30; // pixels per second
+
+let autoScrollActive = false;
+let autoScrollLastTime = null;
+let autoScrollDirection = 1; // 1 = down, -1 = up
+
+function autoScrollStep(timestamp) {
+  if (!autoScrollActive) return;
+  if (autoScrollLastTime === null) autoScrollLastTime = timestamp;
+  const dt = (timestamp - autoScrollLastTime) / 1000;
+  autoScrollLastTime = timestamp;
+
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  if (maxScroll > 0) {
+    let next = window.scrollY + AUTO_SCROLL_SPEED * dt * autoScrollDirection;
+    if (next >= maxScroll) {
+      next = maxScroll;
+      autoScrollDirection = -1;
+    } else if (next <= 0) {
+      next = 0;
+      autoScrollDirection = 1;
+    }
+    window.scrollTo(0, next);
+  }
+  requestAnimationFrame(autoScrollStep);
+}
+
+function setAutoScroll(enabled) {
+  if (enabled === autoScrollActive) return;
+  autoScrollActive = enabled;
+  autoScrollLastTime = null;
+  autoScrollDirection = 1;
+  if (enabled) requestAnimationFrame(autoScrollStep);
+}
+
 let chartLaps = null;
 let chartDurations = null;
 let chartsRendered = false;
@@ -126,6 +161,7 @@ async function refreshState() {
   renderClock(state);
   renderLeaderboard(state);
   renderChartsIfFinished(state);
+  setAutoScroll(!!state.auto_scroll);
 }
 
 refreshState();

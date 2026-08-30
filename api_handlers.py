@@ -2,6 +2,8 @@ from bottle import HTTPResponse, request, response, static_file
 
 from race_state import now_ts
 
+REPO_URL = "https://github.com/webertom6/race_lap_software"
+
 
 def err(message, status=400):
     return HTTPResponse(
@@ -18,6 +20,35 @@ def ok(payload=None):
     return data
 
 
+def _describe_edits(edits):
+    parts = []
+    for edit in edits:
+        try:
+            lap_label = f"lap {int(edit.get('lap_index', 0)) + 1}"
+        except (TypeError, ValueError):
+            lap_label = "lap ?"
+        if edit.get("action") == "remove":
+            parts.append(f"removed {lap_label}")
+        else:
+            try:
+                duration = float(edit.get("new_duration"))
+                parts.append(f"{lap_label} set to {duration:.1f}s")
+            except (TypeError, ValueError):
+                parts.append(f"{lap_label} edited")
+    return ", ".join(parts)
+
+
+def format_gap(seconds):
+    total = int(seconds)
+    h, rem = divmod(total, 3600)
+    m, s = divmod(rem, 60)
+    if h:
+        return f"{h}h {m:02d}m"
+    if m:
+        return f"{m}m {s:02d}s"
+    return f"{s}s"
+
+
 def register_routes(app, state):
     @app.get("/")
     def operator_page():
@@ -30,6 +61,15 @@ def register_routes(app, state):
     @app.get("/static/<filepath:path>")
     def static_assets(filepath):
         return static_file(filepath, root="./static")
+
+    @app.get("/qr.png")
+    def qr_code():
+        import io
+        import qrcode
+        response.content_type = "image/png"
+        buf = io.BytesIO()
+        qrcode.make(REPO_URL).save(buf, format="PNG")
+        return buf.getvalue()
 
     @app.get("/api/state")
     def api_state():
@@ -168,7 +208,7 @@ def register_routes(app, state):
                 return err("team timer is not initialized")
 
             duration = now_ts() - team["lap_started_at"]
-            state.add_lap(team, duration, "button")
+            state.add_lap(team, duration, "button +1")
             state.push_audit("increment-lap", f"team #{team['number']} +1 lap")
             return ok({"state": state.snapshot()})
 
@@ -258,6 +298,60 @@ def register_routes(app, state):
             state.push_audit("magic-lap", f"team #{team['number']} magic lap ({mean_duration:.1f}s)")
             return ok({"state": state.snapshot()})
 
+    @app.get("/api/team-laps")
+    def api_team_laps():
+        response.content_type = "application/json"
+        team_id_raw = request.query.get("team_id")
+        if team_id_raw is None:
+            return err("team_id is required")
+
+        with state.lock:
+            team = state.find_team(int(team_id_raw))
+            if not team:
+                return err("team not found")
+            laps = [
+                {"index": i, "duration_seconds": lap["duration_seconds"], "source": lap["source"]}
+                for i, lap in enumerate(team["laps"])
+            ]
+            return ok({"laps": laps})
+
+    @app.post("/api/preview-lap-edit")
+    def api_preview_lap_edit():
+        response.content_type = "application/json"
+        data = request.json or {}
+        team_id = data.get("team_id")
+        edits = data.get("edits")
+        if team_id is None or not isinstance(edits, list) or not edits:
+            return err("team_id and a non-empty edits list are required")
+
+        with state.lock:
+            if state.phase != "race":
+                return err("lap editing is only available during the race phase")
+            try:
+                row = state.preview_team_edit(int(team_id), edits)
+            except ValueError as exc:
+                return err(str(exc))
+            return ok({"preview": row})
+
+    @app.post("/api/apply-lap-edit")
+    def api_apply_lap_edit():
+        response.content_type = "application/json"
+        data = request.json or {}
+        team_id = data.get("team_id")
+        edits = data.get("edits")
+        if team_id is None or not isinstance(edits, list) or not edits:
+            return err("team_id and a non-empty edits list are required")
+
+        with state.lock:
+            if state.phase != "race":
+                return err("lap editing is only available during the race phase")
+            try:
+                team = state.apply_team_lap_edit(int(team_id), edits)
+            except ValueError as exc:
+                return err(str(exc))
+            state.push_audit("edit-lap", f"team #{team['number']} lap edit: {_describe_edits(edits)}")
+            return ok({"state": state.snapshot()})
+
     @app.post("/api/finish-race")
     def api_finish_race():
         response.content_type = "application/json"
@@ -269,6 +363,39 @@ def register_routes(app, state):
             for team in state.teams:
                 team["lap_started_at"] = None
             state.push_audit("finish-race", "race finished and results locked")
+            return ok({"state": state.snapshot()})
+
+    @app.get("/api/export")
+    def api_export_state():
+        response.content_type = "application/json"
+        response.set_header("Content-Disposition", 'attachment; filename="race-state.json"')
+        with state.lock:
+            return state.to_dict()
+
+    @app.post("/api/import")
+    def api_import_state():
+        response.content_type = "application/json"
+        data = request.json
+        if not isinstance(data, dict):
+            return err("invalid state file")
+
+        with state.lock:
+            try:
+                gap = state.from_dict(data)
+            except (TypeError, ValueError, KeyError) as exc:
+                return err(f"invalid state file: {exc}")
+            message = "state imported from file"
+            if gap > 0:
+                message += f" (resumed after {format_gap(gap)})"
+            state.push_audit("import-state", message)
+            return ok({"state": state.snapshot()})
+
+    @app.post("/api/toggle-auto-scroll")
+    def api_toggle_auto_scroll():
+        response.content_type = "application/json"
+        with state.lock:
+            state.auto_scroll = not state.auto_scroll
+            state.push_audit("toggle-auto-scroll", f"auto-scroll {'enabled' if state.auto_scroll else 'disabled'}")
             return ok({"state": state.snapshot()})
 
     @app.post("/api/reset-all")
