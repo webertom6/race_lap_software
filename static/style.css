@@ -15,7 +15,6 @@
   --muted: #5f6f86;
   --grid: #d9e6f4;
   --line: #eaf1f8;
-  --bg: #f5f7fa;
   --card: #ffffff;
   --danger: #b91c1c;
 }
@@ -26,7 +25,7 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--line);
   color: var(--text);
   font-family: var(--font-body);
 }
@@ -533,7 +532,7 @@ button.active {
 
 /* 5. Scoreboard layout */
 .sb-screen {
-  background: #fff;
+  background: var(--line);
 }
 
 .sb-screen .page {
@@ -685,7 +684,9 @@ button.active {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: #fff;
+  background: #00399c;
+  color: #fff;
+  /* border-bottom: 2px solid #005eff; */
 }
 
 .sb-screen th {
