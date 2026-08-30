@@ -188,6 +188,12 @@ button:disabled {
   font-size: 14px;
 }
 
+.lap-editor-laps {
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
 .lap-editor-row {
   align-items: end;
   margin-bottom: 8px;
@@ -491,6 +497,18 @@ button.active {
   flex-direction: column;
   gap: 12px;
   min-width: 0; /* allow grid item to shrink below content size */
+}
+
+@media (min-width: 1121px) {
+  /* grid rows default to align-items: stretch, so this stack's box is already
+     as tall as the leaderboard column; sticky just rides within that space */
+  .op-stack-sticky {
+    position: sticky;
+    top: 12px;
+    align-self: start;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+  }
 }
 
 /* Operator leaderboard actions */

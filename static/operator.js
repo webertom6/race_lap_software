@@ -232,6 +232,15 @@ function updatePhaseControls(state) {
   document.getElementById("manual-lap-form").querySelector("button").disabled = state.phase !== "race";
   document.getElementById("magic-lap-form").querySelector("button").disabled = state.phase !== "race";
 
+  const isRegistry = state.phase === "registry";
+  document.getElementById("registry-setup-group").classList.toggle("is-hidden", !isRegistry);
+  document.getElementById("registry-summary-card").classList.toggle("is-hidden", isRegistry);
+  if (!isRegistry) {
+    const durationMin = Math.round(state.race_duration_seconds / 60);
+    document.getElementById("registry-summary-text").textContent =
+      `${state.lap_distance_km} km / ${durationMin} min / ${state.teams.length} teams`;
+  }
+
   if (!configDirty) {
     document.getElementById("lap-distance").value = state.lap_distance_km;
     document.getElementById("race-duration").value = Math.round(state.race_duration_seconds / 60);
