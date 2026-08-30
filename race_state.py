@@ -12,6 +12,7 @@ class RaceState:
 
     def __init__(self):
         self.lock = Lock()
+        self.on_change = None  # optional callable, set externally (e.g. autosave)
         self._reset_fields()
 
     def _reset_fields(self):
@@ -27,6 +28,8 @@ class RaceState:
 
     def reset(self):
         self._reset_fields()
+        if self.on_change:
+            self.on_change()
 
     def to_dict(self):
         return {
@@ -72,6 +75,8 @@ class RaceState:
         self.audit.append({"at": now_ts(), "action": action, "message": message})
         if len(self.audit) > 500:
             self.audit = self.audit[-500:]
+        if self.on_change:
+            self.on_change()
 
     def add_lap(self, team, duration_seconds, source):
         crossing = now_ts()

@@ -5,6 +5,7 @@ from bottle import Bottle, request
 from network import get_local_ips, print_qr
 from race_state import RaceState
 from api_handlers import register_routes
+from autosave import AUTOSAVE_PATH, load_state, save_state
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,6 +16,11 @@ log = logging.getLogger("app")
 
 app = Bottle()
 STATE = RaceState()
+
+if load_state(STATE, AUTOSAVE_PATH):
+    log.info("restored race state from %s", AUTOSAVE_PATH)
+
+STATE.on_change = lambda: save_state(STATE, AUTOSAVE_PATH)
 
 
 @app.hook("after_request")
