@@ -42,9 +42,18 @@ class RaceState:
             "next_team_id": self.next_team_id,
             "audit": self.audit,
             "auto_scroll": self.auto_scroll,
+            "saved_at": now_ts(),
         }
 
     def from_dict(self, data):
+        """Restore state from a to_dict() snapshot. If the snapshot was taken
+        mid-race, shift race_start_at/lap_started_at/crossing_at forward by the
+        real-world gap since it was saved, so the resumed race continues from
+        where it left off instead of appearing to have kept running the whole
+        time it was frozen on disk. Audit timestamps are left untouched since
+        they record when actions actually happened in real life.
+        Returns the gap (seconds) that was applied, or 0 if none was needed.
+        """
         phase = data.get("phase", "registry")
         if phase not in ("registry", "race", "finished"):
             raise ValueError("invalid phase")
@@ -64,6 +73,19 @@ class RaceState:
         self.next_team_id = int(data.get("next_team_id", 1))
         self.audit = audit
         self.auto_scroll = bool(data.get("auto_scroll", False))
+
+        gap = 0.0
+        saved_at = data.get("saved_at")
+        if self.phase == "race" and self.race_start_at is not None and saved_at is not None:
+            gap = max(0.0, now_ts() - float(saved_at))
+            if gap > 0:
+                self.race_start_at += gap
+                for team in self.teams:
+                    if team.get("lap_started_at") is not None:
+                        team["lap_started_at"] += gap
+                    for lap in team.get("laps", []):
+                        lap["crossing_at"] += gap
+        return gap
 
     def find_team(self, team_id):
         for team in self.teams:

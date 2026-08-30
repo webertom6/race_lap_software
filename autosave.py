@@ -21,14 +21,15 @@ def save_state(state, path=AUTOSAVE_PATH):
 
 
 def load_state(state, path=AUTOSAVE_PATH):
-    """Best-effort restore from a previous autosave. Returns True if restored."""
+    """Best-effort restore from a previous autosave. Returns the resume gap in
+    seconds (0.0 if none was needed) on success, or None if nothing was restored.
+    """
     if not os.path.exists(path):
-        return False
+        return None
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        state.from_dict(data)
-        return True
+        return state.from_dict(data)
     except (OSError, ValueError, TypeError, KeyError) as exc:
         log.warning("failed to load autosave file %s: %s", path, exc)
-        return False
+        return None

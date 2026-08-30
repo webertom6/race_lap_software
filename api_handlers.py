@@ -38,6 +38,17 @@ def _describe_edits(edits):
     return ", ".join(parts)
 
 
+def format_gap(seconds):
+    total = int(seconds)
+    h, rem = divmod(total, 3600)
+    m, s = divmod(rem, 60)
+    if h:
+        return f"{h}h {m:02d}m"
+    if m:
+        return f"{m}m {s:02d}s"
+    return f"{s}s"
+
+
 def register_routes(app, state):
     @app.get("/")
     def operator_page():
@@ -370,10 +381,13 @@ def register_routes(app, state):
 
         with state.lock:
             try:
-                state.from_dict(data)
+                gap = state.from_dict(data)
             except (TypeError, ValueError, KeyError) as exc:
                 return err(f"invalid state file: {exc}")
-            state.push_audit("import-state", "state imported from file")
+            message = "state imported from file"
+            if gap > 0:
+                message += f" (resumed after {format_gap(gap)})"
+            state.push_audit("import-state", message)
             return ok({"state": state.snapshot()})
 
     @app.post("/api/toggle-auto-scroll")

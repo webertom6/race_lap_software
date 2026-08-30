@@ -4,7 +4,7 @@ from bottle import Bottle, request
 
 from network import get_local_ips, print_qr
 from race_state import RaceState
-from api_handlers import register_routes
+from api_handlers import register_routes, format_gap
 from autosave import AUTOSAVE_PATH, load_state, save_state
 
 logging.basicConfig(
@@ -17,8 +17,10 @@ log = logging.getLogger("app")
 app = Bottle()
 STATE = RaceState()
 
-if load_state(STATE, AUTOSAVE_PATH):
-    log.info("restored race state from %s", AUTOSAVE_PATH)
+gap = load_state(STATE, AUTOSAVE_PATH)
+if gap is not None:
+    suffix = f" (resumed after {format_gap(gap)})" if gap > 0 else ""
+    log.info("restored race state from %s%s", AUTOSAVE_PATH, suffix)
 
 STATE.on_change = lambda: save_state(STATE, AUTOSAVE_PATH)
 
