@@ -2,10 +2,10 @@ import logging
 
 from bottle import Bottle, request
 
+from api_handlers import format_gap, register_routes
+from autosave import AUTOSAVE_PATH, load_state, save_state
 from network import get_local_ips, print_qr
 from race_state import RaceState
-from api_handlers import register_routes, format_gap
-from autosave import AUTOSAVE_PATH, load_state, save_state
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,7 +34,13 @@ register_routes(app, STATE)
 
 
 def main():
+    import os
+    import threading
+    import time
+    import urllib.request
+    import webbrowser
     from waitress import serve
+
     port = 8095
     ips = get_local_ips()
     log.info("Server started on port %d -- share one of these addresses:", port)
@@ -46,6 +52,23 @@ def main():
         print_qr(f"http://localhost:{port}")
     log.info("  http://localhost:%d  (for local)", port)
     print_qr(f"http://localhost:{port}")
+
+    if os.environ.get("RACE_LAP_LAUNCHER") == "1":
+        # only auto-open when started via a launcher script, never on a plain `uv run app.py`
+        # (that would also fire on every hupper dev-reload)
+        def open_browser_when_ready():
+            url = f"http://localhost:{port}"
+            deadline = time.monotonic() + 15
+            while time.monotonic() < deadline:
+                try:
+                    urllib.request.urlopen(url, timeout=0.5)
+                    break
+                except OSError:
+                    time.sleep(0.2)
+            webbrowser.open(url)
+
+        threading.Thread(target=open_browser_when_ready, daemon=True).start()
+
     serve(app, host="0.0.0.0", port=port, threads=8)
 
 
