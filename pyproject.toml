@@ -1,12 +1,11 @@
 [project]
 name = "race-lap-software"
 version = "0.1.0"
-description = "Add your description here"
+description = "Offline-first race timing and public scoreboard for community events"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "bottle>=0.13.4",
-    "pyautogui>=0.9.54",
     "qrcode[pil]>=8.2",
     "waitress>=3.0.2",
 ]
@@ -14,4 +13,5 @@ dependencies = [
 [dependency-groups]
 dev = [
     "hupper>=1.12.1",
+    "ruff>=0.16.5",
 ]

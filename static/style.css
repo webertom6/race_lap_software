@@ -296,7 +296,6 @@ th {
 
 td {
   border-bottom: 1px solid var(--line);
-  /* pad : (between lines) (betweeen columns) */
   padding: 10px 10px;
   color: var(--text);
   font-size: 16px;
@@ -612,12 +611,13 @@ button.active {
   text-align: center;
 }
 
+/* qr code for sharing feature disbale for now 
 .sb-qr {
   width: 80px;
   height: 80px;
   background: #fff;
   padding: 4px;
-}
+} */
 
 .sb-clock-label {
   margin: 0 0 4px;
@@ -686,7 +686,6 @@ button.active {
   z-index: 2;
   background: #00399c;
   color: #fff;
-  /* border-bottom: 2px solid #005eff; */
 }
 
 .sb-screen th {
