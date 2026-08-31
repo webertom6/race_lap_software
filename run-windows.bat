@@ -4,14 +4,14 @@ title Race Lap App - close this window to stop
 cd /d "%~dp0"
 chcp 65001 >nul
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\print-logo.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\print-gradient-logo.ps1"
 echo.
 powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\print-rainbow-name.ps1"
 echo.
-echo Race Lap App
+echo Offline race-timing console
 echo This window IS the app - closing it stops the server.
-echo Don't click inside this window while it's running: it can pause the
-echo app (press Enter if it looks frozen).
+echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\print-warning.ps1"
 echo.
 set /p _unused="Press ENTER to start..."
 

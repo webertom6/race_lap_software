@@ -2,11 +2,11 @@
 cd "$(dirname "$0")"
 printf '\033]0;Race Lap App - close this window to stop\007'
 
-cat "ascii/ascii-logo.txt"
+bash "scripts/print-gradient-logo.sh"
 echo ""
 bash "scripts/print-rainbow-name.sh"
 echo ""
-echo "Race Lap App"
+echo "Offline race-timing console"
 echo "This window IS the app - closing it stops the server."
 echo ""
 read -r -p "Press ENTER to start..." _unused

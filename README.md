@@ -1,5 +1,15 @@
 # Race Lap App
 
+```
+__________    _____    _______ ___________    ____       _____ __________ 
+\______   \  /  _  \  /   ___ \\_   _____/   |    |     /  _  \\______   \
+ |       _/ /  /_\  \/    \  \/ |    __)_    |    |    /  /_\  \|     ___/
+ |    |   \/    |    \     \____|        \   |    |___/    |    \    |    
+ |____|___/\____|____/\________/_________/   |________\____|____/____|           
+```
+
+---
+
 This side-project is destined for youth movement, association, etc. making a **race with laps event** which want to have a free software to handle the race data and display the leaderboard to the public and **can work without WIFI**. This is clearly not my field but, I didn't want to see my team use AI-slop (or worse buy it).
 
 I try to make this app clear/simple as possible such that non-technical person that want to customize can and the installation/use required only `uv`. The best would be to be accessible by a large public at once but difficult now.
