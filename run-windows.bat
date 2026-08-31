@@ -2,9 +2,11 @@
 setlocal
 title Race Lap App - close this window to stop
 cd /d "%~dp0"
+chcp 65001 >nul
 
-type "ascii\ascii-logo.txt"
-type "ascii\ascii-name.txt"
+powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\print-logo.ps1"
+echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\print-rainbow-name.ps1"
 echo.
 echo Race Lap App
 echo This window IS the app - closing it stops the server.
