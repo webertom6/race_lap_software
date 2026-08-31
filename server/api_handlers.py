@@ -1,6 +1,6 @@
 from bottle import HTTPResponse, request, response, static_file
 
-from race_state import now_ts
+from server.race_state import now_ts
 
 REPO_URL = "https://github.com/webertom6/race_lap_software"
 

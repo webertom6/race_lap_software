@@ -2,10 +2,10 @@ import logging
 
 from bottle import Bottle, request
 
-from api_handlers import format_gap, register_routes
-from autosave import AUTOSAVE_PATH, load_state, save_state
-from network import get_local_ips, print_qr
-from race_state import RaceState
+from server.api_handlers import format_gap, register_routes
+from server.autosave import AUTOSAVE_PATH, load_state, save_state
+from server.network import get_local_ips, print_qr
+from server.race_state import RaceState
 
 logging.basicConfig(
     level=logging.INFO,
