@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-31T00:00:00.000Z",
+  "title": "Design System: Race Lap App",
+  "extensions": {
+    "colorMeta": {
+      "action-blue": { "role": "primary", "displayName": "Action Blue", "canonical": "#005eff" },
+      "navy": { "role": "secondary", "displayName": "Navy", "canonical": "#061534" },
+      "alert-red": { "role": "tertiary", "displayName": "Alert Red", "canonical": "#e11d22" },
+      "success-green": { "role": "signal", "displayName": "Success Green", "canonical": "#00b33c" },
+      "spectrum-purple": { "role": "signal", "displayName": "Spectrum Purple", "canonical": "#8b35ff" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#04122f" },
+      "muted-slate": { "role": "neutral", "displayName": "Muted Slate", "canonical": "#5f6f86" },
+      "grid-line": { "role": "neutral", "displayName": "Grid Line", "canonical": "#d9e6f4" },
+      "page-tint": { "role": "neutral", "displayName": "Page Tint", "canonical": "#eaf1f8" },
+      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#ffffff" },
+      "danger-red": { "role": "signal", "displayName": "Danger Red", "canonical": "#b91c1c" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (Barlow Condensed)", "purpose": "Card headings, section titles, scoreboard brand title." },
+      "body": { "displayName": "Body (Barlow)", "purpose": "Form labels, buttons, general UI copy." },
+      "label": { "displayName": "Label (Barlow, small)", "purpose": "Field labels and status captions." },
+      "mono": { "displayName": "Mono (Roboto Mono)", "purpose": "Every live/changing number: timers, laps, ranks." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "button-press", "value": "filter 0ms; transform: scale(0.97) on :active", "purpose": "Tactile press feedback, no easing curve - instant response for repetitive event-time tapping." },
+      { "name": "lap-row-state", "value": "background-color 200ms ease, border-color 200ms ease", "purpose": "Soft transition when a lap-editor row becomes edited/removed, so the state change reads as feedback rather than a jump cut." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "480px" },
+      { "name": "sm", "value": "600px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1120px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "tv-4k", "value": "2560px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default action button - registration submit, save config, add lap.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Save configuration</button>",
+      "css": ".ds-btn { cursor: pointer; padding: 10px 14px; border: 1px solid; border-radius: 0; font-family: 'Barlow', system-ui, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; } .ds-btn-primary { background: #005eff; border-color: #005eff; color: #fff; } .ds-btn-primary:not(:disabled):hover { filter: brightness(0.88); } .ds-btn-primary:not(:disabled):active { filter: brightness(0.75); transform: scale(0.97); } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Important Button",
+      "kind": "button",
+      "refersTo": "button-important",
+      "description": "Urgent/primary-of-the-moment action - Finish race, Reset all.",
+      "html": "<button class=\"ds-btn ds-btn-important\">Finish race</button>",
+      "css": ".ds-btn { cursor: pointer; padding: 10px 14px; border: 1px solid; border-radius: 0; font-family: 'Barlow', system-ui, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; } .ds-btn-important { background: #e11d22; border-color: #e11d22; color: #fff; } .ds-btn-important:not(:disabled):hover { filter: brightness(0.88); } .ds-btn-important:not(:disabled):active { filter: brightness(0.75); transform: scale(0.97); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat bordered container used for every grouped section (config, leaderboard, audit log).",
+      "html": "<section class=\"ds-card\"><h2 class=\"ds-card-heading\">Race configuration</h2><p class=\"ds-card-subtitle\">Set lap distance and duration before race start</p></section>",
+      "css": ".ds-card { background: #ffffff; border: 1px solid #d9e6f4; border-radius: 0; padding: 14px; } .ds-card-heading { margin: 0 0 10px; color: #04122f; font-family: 'Barlow Condensed', sans-serif; font-size: 27px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; } .ds-card-subtitle { margin: 0 0 10px; color: #005eff; font-size: 14px; }"
+    },
+    {
+      "name": "Sticky Leaderboard Header",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Signature component: the scoreboard's sticky table header, given a distinct navy identity so it reads as anchored chrome rather than a floating white box while rows scroll beneath it.",
+      "html": "<table><thead><tr><th class=\"ds-sticky-th\">Rank</th><th class=\"ds-sticky-th\">Team</th></tr></thead></table>",
+      "css": ".ds-sticky-th { position: sticky; top: 0; z-index: 2; background: #061534; color: #fff; border-bottom: 2px solid #005eff; font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; padding: 10px 20px 12px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Timing Booth Console",
+    "overview": "The look is a physical race-timing console, not a SaaS dashboard: flat surfaces, hard corners, thin borders instead of shadows, uppercase mono/condensed labels like a scoreboard display. Every visual decision favors instant legibility over decoration - operators are tapping buttons mid-event under time pressure, and spectators are reading numbers from across a room. This system explicitly rejects the generic AI-templated SaaS look: no gradients, no soft drop shadows, no rounded-pill everything, no decorative color for its own sake.",
+    "keyCharacteristics": [
+      "Flat, bordered surfaces - zero border-radius, zero box-shadow anywhere in the codebase",
+      "Condensed uppercase display type for headings/labels, monospace for every number that changes",
+      "A tight, functional color palette where every hue has exactly one job",
+      "Two distinct surfaces for two distinct audiences: a dense operator console and a large-type public scoreboard"
+    ],
+    "rules": [
+      { "name": "The Function-Only Color Rule", "body": "Green and purple exist solely to mark best-lap/top-of-field highlights; danger red is reserved for destructive confirmations, distinct from the brighter alert red used for routine urgent actions.", "section": "colors" },
+      { "name": "The Numbers-Are-Mono Rule", "body": "Any value that changes in real time renders in Roboto Mono; static labels never use mono.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "No box-shadow declarations exist anywhere; border-radius: 0 is set globally. Depth is implied by borders and background tint only.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep border-radius: 0 and no box-shadow on every new component",
+      "Do render any live/changing number in Roboto Mono",
+      "Do reserve green/purple exclusively for best-lap/top-rank highlighting",
+      "Do keep body and .page backgrounds on the same page-tint token"
+    ],
+    "donts": [
+      "Don't introduce gradients, soft drop shadows, or rounded-pill buttons/cards",
+      "Don't add decorative color; every hue has exactly one functional job",
+      "Don't compute or format leaderboard/timer values in the frontend"
+    ]
+  }
+}
