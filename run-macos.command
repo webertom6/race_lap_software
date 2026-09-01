@@ -2,7 +2,7 @@
 cd "$(dirname "$0")"
 printf '\033]0;Race Lap App - close this window to stop\007'
 
-bash "scripts/print-gradient-logo.sh"
+bash "scripts/print-diagonal-logo.sh"
 echo ""
 bash "scripts/print-rainbow-name.sh"
 echo ""

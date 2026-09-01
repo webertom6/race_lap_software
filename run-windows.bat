@@ -4,7 +4,7 @@ title Race Lap App - close this window to stop
 cd /d "%~dp0"
 chcp 65001 >nul
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\print-gradient-logo.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\print-diagonal-logo.ps1"
 echo.
 powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\print-rainbow-name.ps1"
 echo.
