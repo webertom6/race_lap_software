@@ -14,6 +14,13 @@ This side-project is destined for youth movement, association, etc. making a **r
 
 I try to make this app clear/simple as possible such that non-technical person that want to customize can and the installation/use required only `uv`. The best would be to be accessible by a large public at once but difficult now.
 
+<p align="center">
+  <img src="imgs/visu-operator.png" height="320" alt="Operator console, live race in progress">
+  &nbsp;&nbsp;
+  <img src="imgs/visu-leaderboard.png" height="320" alt="Public scoreboard, live leaderboard">
+</p>
+<p align="center"><em>Operator console (left) and public scoreboard (right) - two screens, always in sync</em></p>
+
 ---
 
 ## install and run (easiest way)
@@ -35,6 +42,11 @@ git clone https://github.com/webertom6/race_lap_software.git
 | Linux | `run-linux.sh` |
 
 The script installs `uv` if it's missing, installs the app's dependencies, starts the server, and opens the app in your browser automatically. The terminal window it opens **is** the app - closing that window stops the server.
+
+<p align="center">
+  <img src="imgs/visu-launcher.png" width="480" alt="Launcher terminal window on first run">
+</p>
+<p align="center"><em>What double-clicking the script looks like</em></p>
 
 - First run needs an internet connection once, to install `uv` and download the dependencies. After that, the app works fully offline.
 - **macOS**: the first time, right-click `run-macos.command` and choose "Open" (instead of double-clicking) - macOS blocks unsigned downloaded scripts by default, and this is the one-time way past that warning.
