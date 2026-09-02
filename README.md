@@ -118,7 +118,7 @@ to open the scoreboard on a TV or phone on the same network, use the IP address 
 
 ```bash
 uv run ruff check .
-uv run python -m py_compile app.py race_state.py api_handlers.py autosave.py network.py
+uv run python -m py_compile app.py server/race_state.py server/api_handlers.py server/autosave.py server/network.py
 node --check static/operator.js
 node --check static/scoreboard.js
 node --check static/shared.js
@@ -136,9 +136,12 @@ node --check static/shared.js
   - revert last lap
   - manual lap entry
   - magic lap (mean duration)
+  - edit or remove past laps for a team (batch changes, preview before confirm)
 - **finished phase**
   - results locked
   - final charts (laps over time, lap duration over time)
+- export/import race state (JSON)
+- auto-scroll toggle for the public scoreboard
 - operator page adapts to phone and tablet for use during the race
 - scoreboard scales for large TV displays (4K)
 
