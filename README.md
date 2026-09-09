@@ -49,7 +49,12 @@ The script installs `uv` if it's missing, installs the app's dependencies, start
 <p align="center"><em>What double-clicking the script looks like</em></p>
 
 - First run needs an internet connection once, to install `uv` and download the dependencies. After that, the app works fully offline.
-- **macOS**: the first time, right-click `run-macos.command` and choose "Open" (instead of double-clicking) - macOS blocks unsigned downloaded scripts by default, and this is the one-time way past that warning.
+- **macOS**: the first time, double-clicking `run-macos.command` gets blocked by Gatekeeper ("Apple could not confirm..."). Click "Done", then go to System Settings -> Privacy & Security, scroll to the bottom, click "Open Anyway" next to the blocked-item message, then double-click the file again and confirm "Open".
+  - if you instead get "you don't have the necessary access privileges" - the download/unzip stripped the file's execute permission (Finder's Get Info can't fix this, only Terminal can) : 
+    1. Open Terminal, type `chmod +x ` (with a trailing space)
+    2. drag `run-macos.command` into the Terminal window to fill in its path
+    3. press Enter
+    4. then double-click the file again.
 - **Linux**: double-click support depends on your file manager and isn't guaranteed. If it doesn't work, open a terminal in this folder and run `./run-linux.sh`.
 
 ---
