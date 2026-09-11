@@ -10,7 +10,7 @@ function formatSeconds(total) {
 }
 
 function renderClock(state) {
-  const clockEl = document.getElementById("race-clock-elapsed") || document.getElementById("race-clock");
+  const clockEl = document.getElementById("race-clock-elapsed");
   const clockRemEls = document.querySelectorAll(".js-remaining-time");
   if (!clockEl && clockRemEls.length === 0) {
     return;

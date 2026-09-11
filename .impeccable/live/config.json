@@ -1,0 +1,6 @@
+{
+  "files": ["static/operator.html", "static/scoreboard.html"],
+  "insertBefore": "</body>",
+  "commentSyntax": "html",
+  "cspChecked": true
+}

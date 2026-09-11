@@ -15,7 +15,6 @@
   --muted: #5f6f86;
   --grid: #d9e6f4;
   --line: #eaf1f8;
-  --bg: #f5f7fa;
   --card: #ffffff;
   --danger: #b91c1c;
 }
@@ -26,7 +25,7 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--line);
   color: var(--text);
   font-family: var(--font-body);
 }
@@ -188,6 +187,12 @@ button:disabled {
   font-size: 14px;
 }
 
+.lap-editor-laps {
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
 .lap-editor-row {
   align-items: end;
   margin-bottom: 8px;
@@ -291,7 +296,6 @@ th {
 
 td {
   border-bottom: 1px solid var(--line);
-  /* pad : (between lines) (betweeen columns) */
   padding: 10px 10px;
   color: var(--text);
   font-size: 16px;
@@ -493,6 +497,18 @@ button.active {
   min-width: 0; /* allow grid item to shrink below content size */
 }
 
+@media (min-width: 1121px) {
+  /* grid rows default to align-items: stretch, so this stack's box is already
+     as tall as the leaderboard column; sticky just rides within that space */
+  .op-stack-sticky {
+    position: sticky;
+    top: 12px;
+    align-self: start;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+  }
+}
+
 /* Operator leaderboard actions */
 .action-th, .action-cell { white-space: nowrap; }
 
@@ -515,7 +531,7 @@ button.active {
 
 /* 5. Scoreboard layout */
 .sb-screen {
-  background: #fff;
+  background: var(--line);
 }
 
 .sb-screen .page {
@@ -563,7 +579,7 @@ button.active {
 
 .sb-top-main {
   display: grid;
-  grid-template-columns: 1.1fr 2fr 2fr 1fr;
+  grid-template-columns: 1.1fr 2fr 1fr;
   gap: 16px;
   align-items: center;
   padding: 16px 22px;
@@ -595,12 +611,13 @@ button.active {
   text-align: center;
 }
 
+/* qr code for sharing feature disbale for now 
 .sb-qr {
   width: 80px;
   height: 80px;
   background: #fff;
   padding: 4px;
-}
+} */
 
 .sb-clock-label {
   margin: 0 0 4px;
@@ -667,7 +684,8 @@ button.active {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: #fff;
+  background: #00399c;
+  color: #fff;
 }
 
 .sb-screen th {

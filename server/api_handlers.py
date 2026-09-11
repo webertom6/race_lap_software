@@ -1,6 +1,6 @@
 from bottle import HTTPResponse, request, response, static_file
 
-from race_state import now_ts
+from server.race_state import now_ts
 
 REPO_URL = "https://github.com/webertom6/race_lap_software"
 
@@ -65,7 +65,9 @@ def register_routes(app, state):
     @app.get("/qr.png")
     def qr_code():
         import io
+
         import qrcode
+
         response.content_type = "image/png"
         buf = io.BytesIO()
         qrcode.make(REPO_URL).save(buf, format="PNG")

@@ -59,10 +59,10 @@ class RaceState:
             raise ValueError("invalid phase")
         teams = data.get("teams", [])
         if not isinstance(teams, list):
-            raise ValueError("teams must be a list")
+            raise TypeError("teams must be a list")
         audit = data.get("audit", [])
         if not isinstance(audit, list):
-            raise ValueError("audit must be a list")
+            raise TypeError("audit must be a list")
 
         self.phase = phase
         self.race_duration_seconds = float(data.get("race_duration_seconds", 3 * 60 * 60))
@@ -253,9 +253,7 @@ class RaceState:
         for team in self.teams:
             lap_points = [{"x": 0, "y": 0}]
             lap_duration_points = []
-            lap_count = 0
-            for lap in team["laps"]:
-                lap_count += 1
+            for lap_count, lap in enumerate(team["laps"], start=1):
                 elapsed_minutes = max(0.0, (lap["crossing_at"] - start) / 60.0)
                 lap_points.append({"x": elapsed_minutes, "y": lap_count})
                 lap_duration_points.append({"x": elapsed_minutes, "y": lap["duration_seconds"]})
