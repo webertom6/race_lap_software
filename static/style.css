@@ -15,7 +15,6 @@
   --muted: #5f6f86;
   --grid: #d9e6f4;
   --line: #eaf1f8;
-  --bg: #f5f7fa;
   --card: #ffffff;
   --danger: #b91c1c;
 }
@@ -26,7 +25,7 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--line);
   color: var(--text);
   font-family: var(--font-body);
 }
@@ -188,6 +187,92 @@ button:disabled {
   font-size: 14px;
 }
 
+.lap-editor-laps {
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.lap-editor-row {
+  align-items: end;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid transparent;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.lap-editor-row.is-edited {
+  background: rgba(0, 94, 255, 0.06);
+  border-color: var(--blue);
+}
+
+.lap-editor-row.is-removed {
+  background: rgba(185, 28, 28, 0.06);
+  border-color: var(--danger);
+}
+
+.lap-editor-row.is-removed .lap-edit-duration {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.lap-edit-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border: 1px solid currentColor;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.lap-edit-badge-edited {
+  color: var(--blue);
+}
+
+.lap-edit-badge-removed {
+  color: var(--danger);
+}
+
+.lap-editor-pending {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--grid);
+  border-left: 3px solid var(--blue);
+}
+
+.lap-editor-pending-title {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lap-editor-pending ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+}
+
+.lap-editor-pending li strong {
+  font-family: var(--font-mono);
+}
+
+.lap-editor-preview {
+  margin-top: 12px;
+}
+
+.lap-editor-actions {
+  margin-top: 10px;
+  align-items: stretch;
+}
+
+.lap-editor-actions .important {
+  flex: 1;
+}
+
 .table-wrap {
   overflow-x: auto;
   background: #fff;
@@ -211,13 +296,12 @@ th {
 
 td {
   border-bottom: 1px solid var(--line);
-  /* pad : (between lines) (betweeen columns) */
   padding: 10px 10px;
   color: var(--text);
   font-size: 16px;
 }
 
-.operator-page tbody tr:hover td {
+.operator-body tbody tr:hover td {
   background: var(--line);
 }
 
@@ -413,6 +497,18 @@ button.active {
   min-width: 0; /* allow grid item to shrink below content size */
 }
 
+@media (min-width: 1121px) {
+  /* grid rows default to align-items: stretch, so this stack's box is already
+     as tall as the leaderboard column; sticky just rides within that space */
+  .op-stack-sticky {
+    position: sticky;
+    top: 12px;
+    align-self: start;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+  }
+}
+
 /* Operator leaderboard actions */
 .action-th, .action-cell { white-space: nowrap; }
 
@@ -435,12 +531,45 @@ button.active {
 
 /* 5. Scoreboard layout */
 .sb-screen {
-  background: #fff;
+  background: var(--line);
 }
 
 .sb-screen .page {
   max-width: 100%;
   padding: 0;
+  padding-bottom: 48px; /* reserve space so the fixed footer never overlaps content */
+}
+
+.sb-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 16px;
+  background: var(--navy);
+  color: #fff;
+}
+
+.sb-footer-qr {
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  padding: 2px;
+}
+
+.sb-footer-credit {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.sb-footer-remaining {
+  margin-left: auto;
+  font-size: 15px;
 }
 
 .sb-top-shell {
@@ -450,7 +579,7 @@ button.active {
 
 .sb-top-main {
   display: grid;
-  grid-template-columns: 1.1fr 2fr 2fr 1fr;
+  grid-template-columns: 1.1fr 2fr 1fr;
   gap: 16px;
   align-items: center;
   padding: 16px 22px;
@@ -481,6 +610,14 @@ button.active {
 .sb-clock-wrap {
   text-align: center;
 }
+
+/* qr code for sharing feature disbale for now 
+.sb-qr {
+  width: 80px;
+  height: 80px;
+  background: #fff;
+  padding: 4px;
+} */
 
 .sb-clock-label {
   margin: 0 0 4px;
@@ -540,6 +677,15 @@ button.active {
 .sb-screen .table-wrap {
   border-left: none;
   border-right: none;
+  overflow: visible; /* keep window as the sole scroll context so sticky headers track page scroll */
+}
+
+.sb-screen thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #00399c;
+  color: #fff;
 }
 
 .sb-screen th {
@@ -654,4 +800,5 @@ button.active {
   .sb-screen th  { font-size: 54px; padding: 18px 36px 20px; }
   .sb-screen td  { font-size: 58px; padding: 18px 36px; }
   .sb-screen table { min-width: 0; }
+  .sb-qr { width: 160px; height: 160px; padding: 10px; }
 }

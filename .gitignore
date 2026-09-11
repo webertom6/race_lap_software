@@ -1,6 +1,11 @@
 # ignore pycache dir
 .venv/
 __pycache__/
+.ruff_cache/
+
+# runtime data
+race_state_autosave.json
+race_state_autosave.json.tmp
 
 # perso
 docs/

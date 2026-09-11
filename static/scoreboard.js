@@ -1,27 +1,44 @@
-const AUTO_SCROLL_SPEED = 40; // pixels per second
+const AUTO_SCROLL_SPEED = 30; // pixels per second
+const AUTO_SCROLL_TICK_MS = 50; // setInterval, not rAF: rAF gets throttled hard when the page is "occluded" (e.g. fullscreen transitions), setInterval doesn't
+const AUTO_SCROLL_MAX_DT = 0.5; // clamp a delayed tick so it can't overshoot far past a bound in one jump
 
 let autoScrollActive = false;
+let autoScrollTimer = null;
 let autoScrollLastTime = null;
+let autoScrollDirection = 1; // 1 = down, -1 = up
 
-function autoScrollStep(timestamp) {
-  if (!autoScrollActive) return;
-  if (autoScrollLastTime === null) autoScrollLastTime = timestamp;
-  const dt = (timestamp - autoScrollLastTime) / 1000;
-  autoScrollLastTime = timestamp;
+function autoScrollTick() {
+  const now = performance.now();
+  if (autoScrollLastTime === null) autoScrollLastTime = now;
+  const dt = Math.min(AUTO_SCROLL_MAX_DT, (now - autoScrollLastTime) / 1000);
+  autoScrollLastTime = now;
 
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-  if (maxScroll > 0) {
-    const next = window.scrollY + AUTO_SCROLL_SPEED * dt;
-    window.scrollTo(0, next >= maxScroll ? 0 : next);
+  if (maxScroll <= 0) return;
+
+  let next = window.scrollY + AUTO_SCROLL_SPEED * dt * autoScrollDirection;
+  if (next >= maxScroll) {
+    next = maxScroll;
+    autoScrollDirection = -1;
+  } else if (next <= 0) {
+    next = 0;
+    autoScrollDirection = 1;
   }
-  requestAnimationFrame(autoScrollStep);
+  window.scrollTo(0, next);
 }
 
 function setAutoScroll(enabled) {
   if (enabled === autoScrollActive) return;
   autoScrollActive = enabled;
   autoScrollLastTime = null;
-  if (enabled) requestAnimationFrame(autoScrollStep);
+  autoScrollDirection = 1;
+  if (autoScrollTimer !== null) {
+    clearInterval(autoScrollTimer);
+    autoScrollTimer = null;
+  }
+  if (enabled) {
+    autoScrollTimer = setInterval(autoScrollTick, AUTO_SCROLL_TICK_MS);
+  }
 }
 
 let chartLaps = null;
