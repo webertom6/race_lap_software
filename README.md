@@ -158,6 +158,8 @@ node --check static/shared.js
 ## notes
 
 - race state is autosaved to the local, gitignored `race_state_autosave.json` file and restored after a restart
+- one background worker coalesces changes over 250 ms, copies a consistent snapshot under the state lock, then serializes and atomically replaces the file outside the lock; failed writes are retried
+- graceful shutdown flushes pending changes; a forced termination or power loss can lose changes not yet written (the 250 ms window plus any disk-write delay or failure)
 - when an active race resumes after downtime, its timing data shifts so the clock continues from the saved point
 - to share the operator page with another device on the same network, open the IP address printed at startup
 
@@ -175,7 +177,7 @@ node --test           # JavaScript frontend (same thing as `npm test`)
 **What's covered, and in what order:**
 
 1. `test/test_race_state.py` - unit tests directly against the `RaceState` class (no HTTP layer): leaderboard tie-break rules, chart data shape, resume-after-gap time shifting, batch lap-edit atomicity, mean-lap-duration fallbacks, audit trimming.
-2. `test/test_autosave.py` - `save_state`/`load_state` round-trips, corrupted/missing file handling, all against temporary files (never the real `race_state_autosave.json`).
+2. `test/test_autosave.py` - `save_state`/`load_state` round-trips, corrupted/missing file handling, background coalescing, snapshot isolation during slow writes, failure retries, and shutdown flushing, all against temporary files (never the real `race_state_autosave.json`).
 3. `test/test_api_handlers.py` - one HTTP-level test per route/behavior (registration, start/increment/revert/manual/magic lap, batch preview+apply edits, finish, export/import, auto-scroll toggle), using a small dependency-free WSGI test client (`WSGIClient` in `test/conftest.py`) so no real server process is started.
 4. `test/test_full_race_scenario.py` - one end-to-end test that plays out a full race with **40 teams** through `registry -> race -> finished` (mixed +1/manual/magic laps, a revert, a batch edit), then checks the whole system together: leaderboard ranking, chart series per team, audit log, and an export/import round-trip.
 5. `test/js/shared.test.js` and `test/js/scoreboard.test.js` - the pure logic used by both frontend pages (`formatSeconds`, `renderClock`, `teamColor`, `toDatasets`), run with Node's built-in test runner (`node:test`) - no npm install required.

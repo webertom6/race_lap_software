@@ -121,17 +121,24 @@ One HTTP-level test per route/behavior, checking each endpoint's contract in iso
 
 ---
 
-## test_autosave.py (6 tests)
+## test_autosave.py (10 tests)
 
-Checks `save_state`/`load_state` in isolation, entirely against temporary files (never the real `race_state_autosave.json`).
+Checks `save_state`/`load_state` and the background autosave worker, entirely against temporary files (never the real `race_state_autosave.json`).
 
 **How it works:** every test uses pytest's built-in `tmp_path` fixture and passes an explicit `path=` argument, so nothing here can ever touch a real project file.
+- Worker tests use real threads and `Event` barriers with bounded waits instead of sleeps; slow-write tests replace the disk writer, while the retry test injects one `os.replace` failure and then performs a real save
+- Every worker is closed in cleanup so no background thread survives the test
 
 **Tests:**
 - `TestSaveState`
   - `test_writes_a_readable_json_file` - the written file round-trips through `json.load`.
   - `test_write_is_atomic_no_leftover_tmp_file` - no `.tmp` file survives a successful save (temp-file + `os.replace` pattern).
   - `test_never_raises_on_unwritable_path` - a save to a non-existent directory doesn't raise (autosave must never break the request that triggered it).
+- `TestAutosaveWorker`
+  - `test_burst_is_coalesced_and_shutdown_flushes_latest_state` - twenty notifications produce one latest-state write when shutdown flushes the pending burst, and closing twice is harmless
+  - `test_slow_write_does_not_hold_lock_or_see_later_mutations` - while a writer is blocked, another mutation acquires the state lock and leaves the first detached snapshot unchanged
+  - `test_failed_write_is_retried_without_another_mutation` - a temporary atomic-replacement failure preserves the previous file and is retried successfully without another notification
+  - `test_idle_worker_does_not_overwrite_existing_file_on_close` - shutting down an unused worker leaves an existing autosave untouched
 - `TestLoadState`
   - `test_missing_file_returns_none` - no autosave file yet -> `None`, not an exception.
   - `test_round_trips_a_saved_state` - what was saved is what comes back.
@@ -210,7 +217,7 @@ Pure-logic tests for the rendering/state-transform functions in `static/operator
 
 - **`server/network.py`** (`get_local_ips`, `print_qr`) - not tested. It's OS/network-stack dependent (real sockets, hostname resolution) and low-value to mock; excluded as out of scope.
 - **`app.py`'s `main()`** - not tested (starting the real Waitress server, the hupper dev-reloader, the launcher auto-open-browser thread). Covered instead by the existing manual commands in the root `README.md`'s "checks" section (`py_compile`, a real `uv run app.py` + `curl` smoke check).
-- **Concurrency** - `RaceState.lock` is never exercised under real concurrent/parallel requests; all tests call routes sequentially in a single thread.
+- **Concurrency** - autosave tests exercise the real worker thread against concurrent mutations and a blocked writer; HTTP routes still run sequentially, so concurrent request stress and hard process termination are not covered
 - **JS network glue and DOM event wiring** - `postJSON`, `loadTeamLaps`, `previewPendingEdits`, `onPendingEditsChanged`, `refreshState` (both pages), `ensureCharts`/`renderChartsIfFinished`'s Chart.js integration, and every `addEventListener` registration are **not executed** by the JS suite - only the pure rendering/state functions they call are extracted and tested in isolation (see each JS file's "how it works" above). A real end-to-end click-through test would need a browser automation tool (e.g. Playwright) driving the actual pages against a running server; that's a different, heavier kind of test than the fast, dependency-free unit tests here.
 - **Visual/CSS regressions and accessibility** - not covered by either suite.
 - **The QR code image (`/qr.png`)** - not tested (thin wrapper around the `qrcode` library).
