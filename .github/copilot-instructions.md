@@ -10,7 +10,7 @@ Python Bottle backend served by Waitress, with Hupper for dev auto-reload. Depen
 - The startup log prints LAN IP addresses and QR codes for quick device access
 - Dev-server gotcha: `uv run` spawns a hupper monitor + worker process pair that a terminal kill does not reliably clean up. Before starting a fresh server, check for orphans: `Get-CimInstance Win32_Process -Filter "Name='python.exe'" | Where-Object { $_.CommandLine -match 'race_lap_software|hupper' }`, then stop them. Do this *before* starting the new server, not after (the new process matches the same filter)
 
-No test runner is configured
+Automated tests: `uv run pytest test` (Python, see README.md's "automated tests" section) and `node --test` (JavaScript, same as `npm test`) - both zero-network, self-contained suites; run them after any change to `server/*.py`, `app.py`, or `static/*.js`
 
 - Python lint: `uv run ruff check .`
 - Backend syntax check: `uv run python -m py_compile app.py race_state.py api_handlers.py autosave.py network.py`

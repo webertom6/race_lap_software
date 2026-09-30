@@ -160,6 +160,29 @@ node --check static/shared.js
 
 ---
 
+## automated tests
+
+Run these any time - after implementing a feature, refactoring, or before a release - to confirm the app is still healthy. Both suites are self-contained: no real server, no browser, no network calls.
+
+```bash
+uv run pytest test    # Python backend (unit + HTTP + one full scenario)
+node --test           # JavaScript frontend (same thing as `npm test`)
+```
+
+**What's covered, and in what order:**
+
+1. `test/test_race_state.py` - unit tests directly against the `RaceState` class (no HTTP layer): leaderboard tie-break rules, chart data shape, resume-after-gap time shifting, batch lap-edit atomicity, mean-lap-duration fallbacks, audit trimming.
+2. `test/test_autosave.py` - `save_state`/`load_state` round-trips, corrupted/missing file handling, all against temporary files (never the real `race_state_autosave.json`).
+3. `test/test_api_handlers.py` - one HTTP-level test per route/behavior (registration, start/increment/revert/manual/magic lap, batch preview+apply edits, finish, export/import, auto-scroll toggle), using a small dependency-free WSGI test client (`WSGIClient` in `test/conftest.py`) so no real server process is started.
+4. `test/test_full_race_scenario.py` - one end-to-end test that plays out a full race with **40 teams** through `registry -> race -> finished` (mixed +1/manual/magic laps, a revert, a batch edit), then checks the whole system together: leaderboard ranking, chart series per team, audit log, and an export/import round-trip.
+5. `test/js/shared.test.js` and `test/js/scoreboard.test.js` - the pure logic used by both frontend pages (`formatSeconds`, `renderClock`, `teamColor`, `toDatasets`), run with Node's built-in test runner (`node:test`) - no npm install required.
+
+Tests run fastest/most-isolated first and the full scenario last, but every test asserts exact expected values (ranks, durations, lap counts) computed from what the test itself did - there are no snapshot/approval files, so a failing test's output always shows the concrete expected vs. actual value and where it happened, regardless of run order.
+
+A clean run ends with `N passed` (pytest) or `pass N` / `fail 0` (node's test runner). A failure names the file, the test, and the exact assertion that didn't hold.
+
+---
+
 ## license
 
 MIT License - Copyright (c) 2026 Tom Weber - see [LICENSE](LICENSE)
