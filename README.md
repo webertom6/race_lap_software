@@ -49,6 +49,9 @@ The script installs `uv` if it's missing, installs the app's dependencies, start
 <p align="center"><em>What double-clicking the script looks like</em></p>
 
 - First run needs an internet connection once, to install `uv` and download the dependencies. After that, the app works fully offline.
+- Barlow, Barlow Condensed, Roboto Mono, and Chart.js 4.5.1 are bundled under `static/fonts/` and `static/vendor/`; neither page loads assets from Google Fonts or a CDN
+- After installing dependencies on this machine with `uv sync`, use `uv run --offline --no-sync app.py` to start without dependency downloads or synchronization; the double-click launchers still run `uv sync` to prepare the environment
+- Other devices need a local network or hotspot to reach the server, not Internet access; the footer QR code is generated locally, but opening its GitHub destination needs Internet access
 - **macOS**: the first time, double-clicking `run-macos.command` gets blocked by Gatekeeper ("Apple could not confirm..."). Click "Done", then go to System Settings -> Privacy & Security, scroll to the bottom, click "Open Anyway" next to the blocked-item message, then double-click the file again and confirm "Open".
   - if you instead get "you don't have the necessary access privileges" - the download/unzip stripped the file's execute permission (Finder's Get Info can't fix this, only Terminal can) : 
     1. Open Terminal, type `chmod +x ` (with a trailing space)
