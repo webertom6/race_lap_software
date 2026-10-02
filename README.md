@@ -14,6 +14,8 @@ This side-project is destined for youth movement, association, etc. making a **r
 
 I try to make this app clear/simple as possible such that non-technical person that want to customize can and the installation/use required only `uv`. The best would be to be accessible by a large public at once but difficult now.
 
+For the essentials, see [HOW.md](HOW.md): setup, lap controls, public display, and saving
+
 <p align="center">
   <img src="imgs/visu-operator.png" height="320" alt="Operator console, live race in progress">
   &nbsp;&nbsp;
@@ -152,6 +154,8 @@ node --check static/shared.js
 - auto-scroll toggle for the public scoreboard
 - operator page adapts to phone and tablet for use during the race
 - scoreboard scales for large TV displays (4K)
+- fonts and final charts work offline using bundled assets
+- background autosave coalesces changes without holding the state lock during disk writes
 
 ---
 
@@ -180,9 +184,11 @@ node --test           # JavaScript frontend (same thing as `npm test`)
 2. `test/test_autosave.py` - `save_state`/`load_state` round-trips, corrupted/missing file handling, background coalescing, snapshot isolation during slow writes, failure retries, and shutdown flushing, all against temporary files (never the real `race_state_autosave.json`).
 3. `test/test_api_handlers.py` - one HTTP-level test per route/behavior (registration, start/increment/revert/manual/magic lap, batch preview+apply edits, finish, export/import, auto-scroll toggle), using a small dependency-free WSGI test client (`WSGIClient` in `test/conftest.py`) so no real server process is started.
 4. `test/test_full_race_scenario.py` - one end-to-end test that plays out a full race with **40 teams** through `registry -> race -> finished` (mixed +1/manual/magic laps, a revert, a batch edit), then checks the whole system together: leaderboard ranking, chart series per team, audit log, and an export/import round-trip.
-5. `test/js/shared.test.js` and `test/js/scoreboard.test.js` - the pure logic used by both frontend pages (`formatSeconds`, `renderClock`, `teamColor`, `toDatasets`), run with Node's built-in test runner (`node:test`) - no npm install required.
+5. `test/js/shared.test.js`, `test/js/scoreboard.test.js`, and `test/js/operator.test.js` - clock/scoreboard helpers and operator rendering/state helpers, run with Node's built-in test runner (`node:test`) - no npm install required
 
-Tests run fastest/most-isolated first and the full scenario last, but every test asserts exact expected values (ranks, durations, lap counts) computed from what the test itself did - there are no snapshot/approval files, so a failing test's output always shows the concrete expected vs. actual value and where it happened, regardless of run order.
+Current suite: **91 Python tests + 37 JavaScript tests**, including a 40-team race and threaded autosave checks; these are unit/WSGI integration tests, not real-browser end-to-end tests
+
+Tests assert expected values computed from their inputs, not snapshot/approval files; the list above groups coverage, it does not prescribe execution order. See [test/README.md](test/README.md) for the detailed index and limitations
 
 A clean run ends with `N passed` (pytest) or `pass N` / `fail 0` (node's test runner). A failure names the file, the test, and the exact assertion that didn't hold.
 

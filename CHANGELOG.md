@@ -2,7 +2,9 @@
 ## context
 First development cycle, from the initial Bottle scaffold through styling, leaderboard polish, backend features, a responsive/mobile pass, a module-split refactor, and the auto-scroll feature. This is the exact version delivered to the client for their first live event.
 
-Second cycle, starting right after that delivery: post-event corrections (`feature/correction_post_1stused`, PR #6 - export/import state, autosave, team-data editing, imported-state timer fix) tagged as `v1.0.0` on `main`, followed by an ongoing design-cleaning pass (`feature/design_cleaning`, not yet merged - operator layout rework, an impeccable-generated design system, repo/codebase cleanup, and non-technical install-and-run launcher scripts with a colored ASCII banner).
+Second cycle, starting right after that delivery: post-event corrections (`feature/correction_post_1stused`, PR #6 - export/import state, autosave, team-data editing, imported-state timer fix) tagged as `v1.0.0`, followed by the design-cleaning pass (`feature/design_cleaning`, merged into `develop` via PR #7 on 2026-09-11 - operator layout rework, design/product docs, repo cleanup, and non-technical launcher scripts).
+
+Current cycle since `v1.1.0`: `feature/autotest_offline_autosaverobust` adds automated backend/frontend tests, embedded fonts and Chart.js for offline use, and background autosave that no longer writes to disk while holding the state lock.
 
 ## changes
 
@@ -295,3 +297,48 @@ date : 2026-09-02
 - changes : replaced the blue-to-white gradient logo with a hard diagonal blue/white split (bottom-left to top-right corner), matching a bi-color cheatsheet worked out for future reuse; removed the now-unused gradient logo scripts
 - impact files : `scripts/print-diagonal-logo.ps1`/`.sh` (new), `run-windows.bat`/`run-macos.command`/`run-linux.sh`
 - fix : none reported
+
+### screenshots and macOS launcher instructions
+date : 2026-09-02 to 2026-09-09
+
+- branch : `feature/design_cleaning`, commits `cdf7d46`, `7c52c97`, `20a79d8`
+- changes : added operator, scoreboard, and launcher screenshots; clarified macOS Gatekeeper approval and restoring execute permission with `chmod +x`
+- impact files : `README.md`, `imgs/visu-operator.png`, `imgs/visu-leaderboard.png`, `imgs/visu-launcher.png`
+- fix : documented the actual macOS approval flow and the missing-execute-permission workaround; no launcher code changed
+
+> `feature/design_cleaning` merged into `develop` via PR #7 (`a5fd876`) on 2026-09-11; these changes are included in the `v1.1.0` baseline
+
+### automated backend and frontend tests
+date : 2026-10-01
+
+- branch : `feature/autotest_offline_autosaverobust`, commit `41c803d`
+- changes : added pytest tests for race state, HTTP routes, persistence, and a complete 40-team scenario; added Node tests for shared clock and scoreboard helpers; documented commands and added swarm agent configuration
+- impact files : `test/conftest.py`, `test/test_*.py`, `test/js/shared.test.js`, `test/js/scoreboard.test.js`, `package.json`, `pyproject.toml`, `uv.lock`, `.gitignore`, `.github/copilot-instructions.md`, `.github/agents/`, `README.md`
+- fix : added regression coverage rather than changing race behavior; tests use isolated state and temporary files, never the production autosave
+
+### operator tests and test reference
+date : 2026-10-01
+
+- branch : `feature/autotest_offline_autosaverobust`, commit `4ffc426`
+- changes : added 22 operator rendering/state-helper tests and a test reference describing coverage, internal mechanics, and limitations
+- impact files : `test/js/operator.test.js`, `test/README.md`
+- fix : no production change; these are helper tests, not browser click-through tests
+
+### embedded fonts and Chart.js for offline use
+date : 2026-10-01
+
+- branch : `feature/autotest_offline_autosaverobust`, commit `459fc02`
+- changes : bundled the used Barlow and Barlow Condensed weights, Roboto Mono variable font, font licenses, and Chart.js 4.5.1; replaced Google Fonts and jsDelivr imports with local URLs
+- impact files : `static/fonts/`, `static/vendor/chart.min.js`, `static/style.css`, `static/scoreboard.html`, `README.md`
+- fix : fonts and final charts no longer depend on Internet access; both pages were checked with external browser requests blocked
+- limitation : first installation still needs downloads; after setup, `uv run --offline --no-sync app.py` starts without dependency synchronization
+
+### background autosave with coalescing and retries
+date : 2026-10-01
+
+- branch : `feature/autotest_offline_autosaverobust`, commit `58d93af`
+- changes : added one autosave worker with a 250 ms coalescing window, detached snapshots, failed-write retries, and graceful-shutdown flushing; added four worker tests and updated persistence docs
+- impact files : `server/autosave.py`, `app.py`, `test/test_autosave.py`, `test/README.md`, `README.md`, `.github/copilot-instructions.md`
+- fix : lap mutations no longer serialize JSON or write files while holding the global state lock; snapshots cannot change underneath an active writer
+- limitation : forced termination or power loss can lose changes not yet written; saving remains atomic replacement, not a guarantee against hardware failure
+- verification : 91 Python tests and 37 JavaScript tests passed; worker tests cover slow writes, snapshot isolation, retries, coalescing, and shutdown
