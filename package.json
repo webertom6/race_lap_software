@@ -1,0 +1,9 @@
+{
+  "name": "race-lap-software-tests",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Node built-in test runner suite for static/*.js - no npm install required.",
+  "scripts": {
+    "test": "node --test"
+  }
+}
