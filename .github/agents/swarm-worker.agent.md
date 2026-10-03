@@ -1,8 +1,8 @@
 ---
 name: swarm-worker
 description: Implements one planned change end-to-end in a resumable context delegated by swarm. Not for freestanding use.
-model: GPT-5.6 Luna (copilot)
-user-invocable: false
+model: GPT-6.1 Sol (copilot)
+user-invocable: true
 ---
 
 # swarm-worker

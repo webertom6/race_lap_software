@@ -2,7 +2,7 @@
 name: swarm
 description: Plans a non-trivial feature or fix, delegates it to one resumable worker, accepts or rejects its result, and uses one optional behavior-preserving simplification pass. Does not edit files itself.
 tools: ['agent']
-agents: ['swarm-worker', 'swarm-code-simplifier']
+model: Claude Opus 5.5 (copilot)
 ---
 
 # swarm

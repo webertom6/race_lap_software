@@ -1,7 +1,8 @@
 ---
 name: swarm-code-simplifier
 description: Performs one focused behavior-preserving simplification pass over completed swarm implementation changes. Not for freestanding use.
-user-invocable: false
+model: GPT-6 Luna (copilot)
+user-invocable: true
 ---
 
 # swarm-code-simplifier
