@@ -14,6 +14,8 @@ This side-project is destined for youth movement, association, etc. making a **r
 
 I try to make this app clear/simple as possible such that non-technical person that want to customize can and the installation/use required only `uv`. The best would be to be accessible by a large public at once but difficult now.
 
+For the essentials, see [HOW.md](HOW.md): setup, lap controls, public display, and saving
+
 <p align="center">
   <img src="imgs/visu-operator.png" height="320" alt="Operator console, live race in progress">
   &nbsp;&nbsp;
@@ -49,6 +51,9 @@ The script installs `uv` if it's missing, installs the app's dependencies, start
 <p align="center"><em>What double-clicking the script looks like</em></p>
 
 - First run needs an internet connection once, to install `uv` and download the dependencies. After that, the app works fully offline.
+- Barlow, Barlow Condensed, Roboto Mono, and Chart.js 4.5.1 are bundled under `static/fonts/` and `static/vendor/`; neither page loads assets from Google Fonts or a CDN
+- After installing dependencies on this machine with `uv sync`, use `uv run --offline --no-sync app.py` to start without dependency downloads or synchronization; the double-click launchers still run `uv sync` to prepare the environment
+- Other devices need a local network or hotspot to reach the server, not Internet access; the footer QR code is generated locally, but opening its GitHub destination needs Internet access
 - **macOS**: the first time, double-clicking `run-macos.command` gets blocked by Gatekeeper ("Apple could not confirm..."). Click "Done", then go to System Settings -> Privacy & Security, scroll to the bottom, click "Open Anyway" next to the blocked-item message, then double-click the file again and confirm "Open".
   - if you instead get "you don't have the necessary access privileges" - the download/unzip stripped the file's execute permission (Finder's Get Info can't fix this, only Terminal can) : 
     1. Open Terminal, type `chmod +x ` (with a trailing space)
@@ -149,14 +154,43 @@ node --check static/shared.js
 - auto-scroll toggle for the public scoreboard
 - operator page adapts to phone and tablet for use during the race
 - scoreboard scales for large TV displays (4K)
+- fonts and final charts work offline using bundled assets
+- background autosave coalesces changes without holding the state lock during disk writes
 
 ---
 
 ## notes
 
 - race state is autosaved to the local, gitignored `race_state_autosave.json` file and restored after a restart
+- one background worker coalesces changes over 250 ms, copies a consistent snapshot under the state lock, then serializes and atomically replaces the file outside the lock; failed writes are retried
+- graceful shutdown flushes pending changes; a forced termination or power loss can lose changes not yet written (the 250 ms window plus any disk-write delay or failure)
 - when an active race resumes after downtime, its timing data shifts so the clock continues from the saved point
 - to share the operator page with another device on the same network, open the IP address printed at startup
+
+---
+
+## automated tests
+
+Run these any time - after implementing a feature, refactoring, or before a release - to confirm the app is still healthy. Both suites are self-contained: no real server, no browser, no network calls.
+
+```bash
+uv run pytest test    # Python backend (unit + HTTP + one full scenario)
+node --test           # JavaScript frontend (same thing as `npm test`)
+```
+
+**What's covered, and in what order:**
+
+1. `test/test_race_state.py` - unit tests directly against the `RaceState` class (no HTTP layer): leaderboard tie-break rules, chart data shape, resume-after-gap time shifting, batch lap-edit atomicity, mean-lap-duration fallbacks, audit trimming.
+2. `test/test_autosave.py` - `save_state`/`load_state` round-trips, corrupted/missing file handling, background coalescing, snapshot isolation during slow writes, failure retries, and shutdown flushing, all against temporary files (never the real `race_state_autosave.json`).
+3. `test/test_api_handlers.py` - one HTTP-level test per route/behavior (registration, start/increment/revert/manual/magic lap, batch preview+apply edits, finish, export/import, auto-scroll toggle), using a small dependency-free WSGI test client (`WSGIClient` in `test/conftest.py`) so no real server process is started.
+4. `test/test_full_race_scenario.py` - one end-to-end test that plays out a full race with **40 teams** through `registry -> race -> finished` (mixed +1/manual/magic laps, a revert, a batch edit), then checks the whole system together: leaderboard ranking, chart series per team, audit log, and an export/import round-trip.
+5. `test/js/shared.test.js`, `test/js/scoreboard.test.js`, and `test/js/operator.test.js` - clock/scoreboard helpers and operator rendering/state helpers, run with Node's built-in test runner (`node:test`) - no npm install required
+
+Current suite: **91 Python tests + 37 JavaScript tests**, including a 40-team race and threaded autosave checks; these are unit/WSGI integration tests, not real-browser end-to-end tests
+
+Tests assert expected values computed from their inputs, not snapshot/approval files; the list above groups coverage, it does not prescribe execution order. See [test/README.md](test/README.md) for the detailed index and limitations
+
+A clean run ends with `N passed` (pytest) or `pass N` / `fail 0` (node's test runner). A failure names the file, the test, and the exact assertion that didn't hold.
 
 ---
 

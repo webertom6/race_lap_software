@@ -13,5 +13,10 @@ dependencies = [
 [dependency-groups]
 dev = [
     "hupper>=1.12.1",
+    "pytest>=9.1.1",
     "ruff>=0.16.5",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+pythonpath = ["."]

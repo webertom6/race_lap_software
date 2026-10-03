@@ -1,9 +1,10 @@
+import atexit
 import logging
 
 from bottle import Bottle, request
 
 from server.api_handlers import format_gap, register_routes
-from server.autosave import AUTOSAVE_PATH, load_state, save_state
+from server.autosave import AUTOSAVE_PATH, AutosaveWorker, load_state
 from server.network import get_local_ips, print_qr
 from server.race_state import RaceState
 
@@ -22,7 +23,9 @@ if gap is not None:
     suffix = f" (resumed after {format_gap(gap)})" if gap > 0 else ""
     log.info("restored race state from %s%s", AUTOSAVE_PATH, suffix)
 
-STATE.on_change = lambda: save_state(STATE, AUTOSAVE_PATH)
+AUTOSAVE = AutosaveWorker(STATE, AUTOSAVE_PATH)
+STATE.on_change = AUTOSAVE.request_save
+atexit.register(AUTOSAVE.close)
 
 
 @app.hook("after_request")
@@ -39,6 +42,7 @@ def main():
     import time
     import urllib.request
     import webbrowser
+
     from waitress import serve
 
     port = 8095
@@ -69,7 +73,10 @@ def main():
 
         threading.Thread(target=open_browser_when_ready, daemon=True).start()
 
-    serve(app, host="0.0.0.0", port=port, threads=8)
+    try:
+        serve(app, host="0.0.0.0", port=port, threads=8)
+    finally:
+        AUTOSAVE.close()
 
 
 if __name__ == "__main__":
