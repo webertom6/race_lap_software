@@ -14,6 +14,8 @@ This side-project is destined for youth movement, association, etc. making a **r
 
 I try to make this app clear/simple as possible such that non-technical person that want to customize can and the installation/use required only `uv`. The best would be to be accessible by a large public at once but difficult now.
 
+Open operator page on your computer to control the app and place the scoreboard tab on a bigger screen for public info (sharing the scoreboard by sharing URL is possible, but the goal was to be able to work in isolated area and it's more user-friendly to show the information to everyone (at a bar, restaurant, or other common team area) rather than having everyone looking at their phones.
+
 For the essentials, see [HOW.md](HOW.md): setup, lap controls, public display, and saving
 
 <p align="center">
